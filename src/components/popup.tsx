@@ -1,6 +1,21 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateJoinPage: React.FC = () => {
+    const navigate = useNavigate();
+
+   
+  const handleCreate = () => {
+    navigate("/create", { replace: true})
+
+
+  }
+
+  const handleJoin = () => {
+    navigate("/join", { replace: true})
+
+  }
+
   return (
     <div className="h-screen w-full bg-[#0F1120] flex items-center justify-center">
       <div className="bg-[#1A1C2A] p-14 rounded-2xl shadow-xl w-[90%] max-w-2xl text-center">
@@ -17,12 +32,14 @@ const CreateJoinPage: React.FC = () => {
         <div className="flex flex-col gap-6">
           <button
             className="bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white py-4 rounded-lg font-semibold text-lg shadow-md hover:opacity-90 transition"
+            onClick={handleCreate}
           >
             Create Workspace
           </button>
 
           <button
             className="bg-[#232536] text-white py-4 rounded-lg font-semibold text-lg shadow-md border border-[#2C2F3F] hover:bg-[#2B2D42] transition"
+            onClick={handleJoin}
           >
             Join Workspace
           </button>

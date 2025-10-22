@@ -26,18 +26,42 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
 
   const navigate = useNavigate()
 
-  const onSubmitsuccessForm = (jwtToken: string, userId: string) => {
-    Cookies.set("jwt_Token", jwtToken, {expires: 30})
-    console.log(userId)
-    navigate("/", {replace: true})
 
+  async function fetchData(id: string) {
+  const url = `http://localhost:3005/user/details/${id}`;
+  try {
+    const response = await fetch(url, { method: "GET" });
+    const data = await response.json();
+
+    if (response.ok) {
+      return data.user.role; // ✅ return role
+    } else {
+      return "pending";
+    }
+  } catch (e) {
+    console.log("fetch failed", e);
+    return "pending";
   }
+}
+
+const onSubmitsuccessForm = async (jwtToken: string, userId: string) => {
+  Cookies.set("jwt_Token", jwtToken, { expires: 30 });
+  localStorage.setItem("userId", userId)
+
+  const userRole = await fetchData(userId); // ✅ store result
+
+  if (userRole === "pending") {
+    navigate("/select", { replace: true });
+  } else {
+    navigate("/", { replace: true });
+  }
+};
+
 
   const onsubmitFailed = (err: string) => {
     dispatch(actions.userError(err));
     dispatch(actions.userShowError());
-  }
-
+  } 
 
   const onSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();

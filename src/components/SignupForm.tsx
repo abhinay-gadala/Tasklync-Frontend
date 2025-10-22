@@ -29,9 +29,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
   const navigate = useNavigate();
 
   const onSubmitSuccess = (jwtToken: string, userId: string) => {
-    Cookies.set("jwt_Token", jwtToken, { expires: 30 });
+    Cookies.set("jwt_Token", jwtToken, { expires: 7 });
+    localStorage.setItem("userId", userId)
     navigate("/", { replace: true });
-    console.log("User ID:", userId);
+   
   }
 
   const onSubmitFailed = (error_msg: string) => {
