@@ -2,9 +2,18 @@ import { useEffect, useState } from "react";
 import Cookie from "js-cookie";
 import {  useNavigate } from "react-router-dom";
 
+
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const customerName = localStorage.getItem("customerName")
+
+  // Compute a single-letter avatar from the user's first name (safe fallback)
+  const avatarLetter = (() => {
+    if (!customerName) return '?';
+    const first = String(customerName).trim().split(/\s+/)[0];
+    return first && first.length > 0 ? first[0].toUpperCase() : '?';
+  })();
 
 
   const onClickSubmit = () => {
@@ -28,36 +37,8 @@ const Navbar: React.FC = () => {
       <div className="flex items-center justify-between h-16 px-4 md:px-6">
         {/* Logo and Mobile Menu Button */}
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-asana-blue"
-            aria-expanded={isMobileMenuOpen}
-            aria-controls="mobile-menu"
-          >
-            <svg
-              className="w-6 h-6 text-gray-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {isMobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              )}
-            </svg>
-          </button>
+          {/* Mobile menu is toggled via the profile image on small screens.
+              Removed the separate hamburger button to simplify UI. */}
           <a href="/" className="flex items-center space-x-2">
             <img src="https://res.cloudinary.com/dy21aey3k/image/upload/v1758796031/Screenshot_2025-09-25_155207_lt0qzz.png" alt="tasklync" className="w-20"/>
             {/* <span className="text-xl font-bold text-gray-200">Tasklync</span> */}
@@ -101,11 +82,24 @@ const Navbar: React.FC = () => {
             Logout
           </button>
           <div className="relative">
-            <img
-              src="https://i.pravatar.cc/300?u=a042581f4e29026704d"
-              alt="User Avatar"
-              className="w-8 h-8 rounded-full cursor-pointer ring-2 ring-asana-logo"
-            />
+            <div 
+              className="w-8 h-8 bg-purple-600 text-white rounded-full cursor-pointer ring-2 ring-asana-logo flex items-center justify-center font-semibold text-base uppercase"
+              role="button"
+              tabIndex={0}
+              aria-controls="mobile-menu"
+              aria-expanded={isMobileMenuOpen}
+              onClick={() => {
+                // toggle mobile menu on small screens only
+                if (window.innerWidth < 768) setIsMobileMenuOpen(!isMobileMenuOpen);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  if (window.innerWidth < 768) setIsMobileMenuOpen(!isMobileMenuOpen);
+                }
+              }}
+            >
+              {avatarLetter}
+            </div>
           </div>
         </div>
       </div>

@@ -15,9 +15,15 @@ interface RootState {
     password: string;
     error: string;
     showError: boolean;
+    customerName: string
   };
 }
 
+interface userData {
+  _id: string,
+  name: string,
+  role: string
+}
 
 const actions = userSlice.actions;
 
@@ -28,11 +34,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
 
   const navigate = useNavigate();
 
-  const onSubmitSuccess = (jwtToken: string, userId: string) => {
+  const onSubmitSuccess = (jwtToken: string, user: userData) => {
     Cookies.set("jwt_Token", jwtToken, { expires: 7 });
-    localStorage.setItem("userId", userId)
-    navigate("/", { replace: true });
-   
+    localStorage.setItem("userId", user._id)
+    // store display name and update redux before navigating so UI reads it immediately
+    localStorage.setItem("customerName", user.name);
+    navigate("/select", { replace: true });
   }
 
   const onSubmitFailed = (error_msg: string) => {
@@ -58,7 +65,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
         const response = await fetch(url, option);
         const data = await response.json();
         if(response.ok){
-          onSubmitSuccess(data.token, data.userId);
+          onSubmitSuccess(data.token, data.user);
         }
         else{
           onSubmitFailed(data.error_msg || "Signup failed");
@@ -71,7 +78,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
     
     }
 
-  const jwtToken = Cookies.get("jwt_token");
+  const jwtToken = Cookies.get("jwt_Token");
   if (jwtToken !== undefined) {
     return <Navigate to="/select" />;
   } 

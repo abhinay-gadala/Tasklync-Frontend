@@ -4,6 +4,9 @@ import projectSlice from "../redux/projectSlice";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
+
+
+
 interface RootStates {
   projectStore: {
     names: string;
@@ -25,17 +28,15 @@ const CreateWorkspace: React.FC = () => {
 
   const handlingSuccess = async (): Promise<string> => {
     const id = localStorage.getItem("userId");
-    const url = `http://localhost:3005/user/details/${id}`;
-
+    if (!id) return "pending";
     try {
-      const response = await fetch(url, { method: "GET" });
-      const data = await response.json();
-
-      if (response.ok) {
+      const url = `http://localhost:3005/user/details/${id}`;
+      const resp = await fetch(url, { method: "GET" });
+      const data = await resp.json();
+      if (resp.ok && data.user && data.user.role) {
         return data.user.role;
-      } else {
-        return "pending";
       }
+      return "pending";
     } catch (e) {
       console.log("fetch failed", e);
       return "pending";
@@ -69,6 +70,7 @@ const CreateWorkspace: React.FC = () => {
         const fetchedRole = await handlingSuccess();
         Cookies.set("role", fetchedRole, { expires: 7 });
         localStorage.setItem("Code", data.projectCode);
+        localStorage.setItem("ProjectId", data.projectId)
         navigate("/", { replace: true });
       }
     } catch (e) {

@@ -6,8 +6,19 @@ import CreateJoinPage from './components/popup'
 import CreateWorkspace from './components/Create'
 import JoinWorkspace from './components/Join'
 import ProtectedRoute from './components/ProtectedRoute'
+import Dashboard from './components/Dashboard'
+import Tasks from './components/Tasks'
+import Inbox from './components/Inbox'
+import Reporting from './components/Reporting'
+import Portfolios from './components/Portfolios'
+import Workspace from './components/Workspace'
+import Goals from './components/Goals'
+import ProjectView from './components/ProjectView'
 
 function App() {
+
+
+  
 
   return (
   
@@ -31,6 +42,46 @@ function App() {
          <ProtectedRoute>
              <JoinWorkspace/>
          </ProtectedRoute> 
+         }/>
+         <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/tasks" element={
+          <ProtectedRoute>
+            <Tasks/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/inbox" element={
+          <ProtectedRoute>
+            <Inbox/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/reporting" element={
+          <ProtectedRoute>
+            <Reporting/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/portfolios" element={
+          <ProtectedRoute>
+            <Portfolios/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/goals" element={
+          <ProtectedRoute>
+            <Goals/>
+          </ProtectedRoute>
+         }/>
+          <Route path="/workspace" element={
+          <ProtectedRoute>
+            <Workspace/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/projectview" element={
+          <ProtectedRoute>
+            <ProjectView/>
+          </ProtectedRoute>
          }/>
       </Routes>
     </BrowserRouter>

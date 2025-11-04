@@ -3,18 +3,16 @@ import { useDispatch, useSelector } from "react-redux";
 import Cookies from "js-cookie";
 import { useNavigate, Navigate } from "react-router-dom";
 import userSlice from "../redux/userSlice";
+import type { RootState } from "../redux/store";
 
 interface LoginFormProps {
   onToggle: () => void;
 }
 
-interface RootState {
-  userStore: {
-    email: string;
-    password: string;
-    error: string;
-    showError: boolean;
-  };
+interface userData {
+  _id: string,
+  name: string,
+  role: string
 }
 
 const actions = userSlice.actions;
@@ -27,32 +25,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
   const navigate = useNavigate()
 
 
-  async function fetchData(id: string) {
-  const url = `http://localhost:3005/user/details/${id}`;
-  try {
-    const response = await fetch(url, { method: "GET" });
-    const data = await response.json();
-
-    if (response.ok) {
-      return data.user.role; // ✅ return role
-    } else {
-      return "pending";
-    }
-  } catch (e) {
-    console.log("fetch failed", e);
-    return "pending";
-  }
-}
-
-const onSubmitsuccessForm = async (jwtToken: string, userId: string) => {
+const onSubmitsuccessForm = async (jwtToken: string, user: userData) => {
   Cookies.set("jwt_Token", jwtToken, { expires: 30 });
-  localStorage.setItem("userId", userId)
+  localStorage.setItem("userId", user._id)
+  // persist name and update redux so avatar shows immediately
+  localStorage.setItem("customerName", user.name)
 
-  const userRole = await fetchData(userId); // ✅ store result
-
-  if (userRole === "pending") {
+  if (user.role === "pending") {
     navigate("/select", { replace: true });
   } else {
+    Cookies.set("role", user.role, { expires: 30 });
     navigate("/", { replace: true });
   }
 };
@@ -77,7 +59,7 @@ const onSubmitsuccessForm = async (jwtToken: string, userId: string) => {
       })
       const data = await response.json()
       if(response.ok){
-        onSubmitsuccessForm(data.token, data.userId)
+        onSubmitsuccessForm(data.token, data.user)
       }
       else{
         onsubmitFailed(data.error_msg || "login Failed")
@@ -88,9 +70,9 @@ const onSubmitsuccessForm = async (jwtToken: string, userId: string) => {
     }
   } 
 
-  const jwtToken = Cookies.get("jwt_Token")
-  if(jwtToken !== undefined){
-    return <Navigate to="/" />
+  const jwtToken = Cookies.get("jwt_Token");
+  if (jwtToken !== undefined) {
+    return <Navigate to="/" />;
   }
 
 

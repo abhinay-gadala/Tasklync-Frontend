@@ -7,7 +7,7 @@ const userSlice = createSlice({
         email: "",
         password:"",
         error: "",
-        showError: false
+        showError: false,
 
 
     },
@@ -26,7 +26,7 @@ const userSlice = createSlice({
         },
         userShowError: (state) => {
             state.showError = true
-        }
+        },
     },
 });
 
