@@ -69,7 +69,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
         </button>
       </div>
 
-      <nav className="flex flex-col gap-3 mt-10">
+      <nav className="flex flex-col mt-10">
         <button
           onClick={() => dispatch(setActiveView("home"))}
           className="flex items-center gap-2 hover:bg-[#2A3444] p-2 rounded justify-center md:justify-start"
@@ -128,9 +128,21 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
           <hr className="my-6 border-[#2A3444]" />
         </>
       )}
-
-      <p className="uppercase text-gray-400 text-xs mb-2">Projects</p>
-      {projects.map((item) => (
+      <div className="mb-4">
+        <div className="flex items-center justify-between">
+          <p className="uppercase text-gray-400 text-xs mb-2">Projects</p>
+          {role === "admin" && (
+            <button
+              onClick={() => navigate("/create")}
+              className="flex items-center gap-2 text-sm text-gray-300 hover:text-white px-2 py-1 rounded-lg bg-transparent hover:bg-[#2A3444] transition rounded-xl"
+              title="Create Project"
+            >
+              <Plus size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+    {projects.map((item) => (
         <button
           key={item._id}
           onClick={() => dispatch(setActiveView(`project-${item.name}`))}
@@ -141,16 +153,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
         </button>
       ))}
 
-      {role === "admin" && (
-        <button
-          onClick={() => navigate("/create")}
-          className="flex items-center gap-2 text-sm text-gray-300 mt-2 hover:text-white justify-center md:justify-start"
-        >
-          <Plus size={18} />
-          <span className="md:inline">Create Project</span>
-        </button>
-      )}
-
+      
       <hr className="my-6 border-[#2A3444]" />
       <p className="uppercase text-gray-400 text-xs mb-2">Team</p>
       <button
