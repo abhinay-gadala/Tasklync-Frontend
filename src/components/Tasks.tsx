@@ -1,11 +1,25 @@
+// src/components/Tasks.tsx
+import React from "react";
+import MyTasks from "./MyTask";
+import { useSelector } from "react-redux";
+import ManageTasks from "./ManageTask";
 
 
-function Tasks() {
-  return (
-    <div>
-      welcome task
-    </div>
-  )
+interface RootState{
+  userStore: {
+    showTask: string
+  }
 }
 
-export default Tasks
+const Tasks: React.FC = () => {
+  const { showTask } = useSelector((store: RootState) => store.userStore)
+
+  return (
+    <>
+     {showTask ? <ManageTasks/>: <MyTasks/>}
+    </>
+   
+  )
+};
+
+export default Tasks;

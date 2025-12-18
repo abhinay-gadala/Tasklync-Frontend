@@ -1,11 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import projectSlice from "../redux/projectSlice";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-
-
-
 
 interface RootStates {
   projectStore: {
@@ -19,62 +16,92 @@ interface RootStates {
 const actions = projectSlice.actions;
 
 const CreateWorkspace: React.FC = () => {
-  const dispatch = useDispatch();
+  const { id } = useParams(); // ✅ Detect if we're editing
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const { names, companyName, companyEmail, companyAddress } = useSelector(
     (store: RootStates) => store.projectStore
   );
 
-  const handlingSuccess = async (): Promise<string> => {
-    const id = localStorage.getItem("userId");
-    if (!id) return "pending";
-    try {
-      const url = `http://localhost:3005/user/details/${id}`;
-      const resp = await fetch(url, { method: "GET" });
-      const data = await resp.json();
-      if (resp.ok && data.user && data.user.role) {
-        return data.user.role;
+  const [isEditing, setIsEditing] = useState(false);
+
+  // ✅ Fetch project data if in edit mode
+ useEffect(() => {
+  if (id) {
+    setIsEditing(true);
+
+    const fetchProjectData = async () => {
+      try {
+        const token = Cookies.get("jwt_Token");
+        const response = await fetch(`http://localhost:3005/project/details/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.data && data.data.project) {
+          const project = data.data.project;
+
+          // ✅ Dispatch Redux actions with correct values
+          dispatch(actions.userNames(project.name));
+          dispatch(actions.userCompany(project.companyName));
+          dispatch(actions.userEmail(project.companyEmail || ""));
+          dispatch(actions.userAddress(project.companyAddress || ""));
+        } else {
+          console.error("Invalid data structure from backend:", data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch project for editing", err);
       }
-      return "pending";
-    } catch (e) {
-      console.log("fetch failed", e);
-      return "pending";
-    }
-  };
+    };
 
-  const handleCreatePage = async (e: React.FormEvent) => {
+    fetchProjectData();
+  }
+}, [id, dispatch]);
+
+
+  // ✅ Handle Create / Update
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const token = Cookies.get("jwt_Token");
-      const formData = {
-        name: names,
-        companyName,
-        companyEmail,
-        companyAddress,
-      };
+    const token = Cookies.get("jwt_Token");
 
-      const response = await fetch("http://localhost:3005/project/create", {
-        method: "POST",
+    const payload = {
+      name: names,
+      companyName,
+      companyEmail,
+      companyAddress,
+    };
+
+    try {
+      const url = isEditing
+        ? `http://localhost:3005/project/${id}` // update route
+        : `http://localhost:3005/project/create`;
+
+      const method = isEditing ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
-           Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
-        // credentials: "include", // uncomment if backend uses cookies
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        const fetchedRole = await handlingSuccess();
-        Cookies.set("role", fetchedRole, { expires: 7 });
-        localStorage.setItem("Code", data.projectCode);
-        localStorage.setItem("ProjectId", data.projectId)
+        console.log(isEditing ? "Project updated successfully" : "Project created successfully");
         navigate("/", { replace: true });
+      } else {
+        console.error("Failed to submit project:", data);
       }
-    } catch (e) {
-      console.log("post failed", e);
+    } catch (err) {
+      console.error("Request failed:", err);
     }
   };
 
@@ -82,13 +109,10 @@ const CreateWorkspace: React.FC = () => {
     <div className="h-screen w-full bg-[#0F1120] flex items-center justify-center">
       <div className="bg-[#1A1C2A] p-10 rounded-xl shadow-xl w-[90%] max-w-2xl">
         <h2 className="text-4xl font-bold text-white text-center mb-8">
-          Create Workspace
+          {isEditing ? "Edit Workspace" : "Create Workspace"}
         </h2>
-        {/* ✅ Fixed form submission */}
-        <form
-          className="flex flex-col gap-6"
-          onSubmit={handleCreatePage}
-        >
+
+        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           {/* Workspace Name */}
           <div className="flex flex-col gap-2">
             <label className="text-white text-lg font-medium">Workspace Name</label>
@@ -137,12 +161,11 @@ const CreateWorkspace: React.FC = () => {
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="bg-gradient-to-r from-purple-500 to-fuchsia-600 text-xl text-white py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
           >
-            Create Workspace
+            {isEditing ? "Save Changes" : "Create Workspace"}
           </button>
         </form>
       </div>

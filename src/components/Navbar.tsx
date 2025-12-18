@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Cookie from "js-cookie";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Tasks from "./Tasks";
 
 
 const Navbar: React.FC = () => {
@@ -70,7 +71,7 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Nav Links and User Profile */}
         <div className="flex items-center space-x-4">
-          <button
+          <button onClick={() => {navigate("/tasks")}}
             className="text-gray-300 hover:text-asana-blue font-medium hidden md:block"
           >
             My Tasks

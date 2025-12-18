@@ -63,7 +63,6 @@ const JoinWorkspace: React.FC = () => {
       if (response.ok) {
         const fetchedRole = await handlingJoinSuccess();
         Cookies.set("role", fetchedRole, { expires: 7 });
-        localStorage.setItem("ProjectId", data.projectId)
         navigate("/", { replace: true });
         console.log(data)
       }

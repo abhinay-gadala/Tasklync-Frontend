@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setActiveView } from "../redux/viewSlice";
 import { useNavigate } from "react-router-dom";
+import SlideProjects from "./SlideProjects";
 
 interface Project {
   _id: string;
@@ -23,33 +24,73 @@ type SlideProps = {
   onClose?: () => void;
 };
 
+
+
 const Slide: React.FC<SlideProps> = ({ onClose }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const role = Cookies.get("role");
+  const token = Cookies.get("jwt_Token");
 
   useEffect(() => {
-    const id = localStorage.getItem("ProjectId");
-    const fetchProjectDetails = async () => {
-      try {
-        const token = Cookies.get("jwt_Token");
-        const res = await fetch(`http://localhost:3005/project/details/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = await res.json();
-        if (res.ok && data.project) {
-          setProjects([data.project]);
-        }
-      } catch (err) {
-        console.error("Failed to fetch project details", err);
+  const fetchProjectDetails = async () => {
+    try {
+      
+      const res = await fetch("http://localhost:3005/project/get", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      // ✅ Correct key: "projects"
+      if (res.ok && data.projects) {
+        setProjects(data.projects);
+      } else {
+        console.warn("No projects found or fetch failed:", data);
       }
-    };
-    if (id) fetchProjectDetails();
-  }, []);
+    } catch (err) {
+      console.error("Failed to fetch project details", err);
+    }
+  };
+
+  fetchProjectDetails();
+});
+
+  const onDeleteProject = async (id: string) => {
+    try {
+      const response = await fetch(`http://localhost:3005/project/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        // On successful delete, remove the project from state
+        setProjects(projects.filter(p => p._id !== id));
+        alert(data.message || "Project deleted successfully");
+      } else {
+        // Show error message from server
+        alert(data.message || "Failed to delete project");
+      }
+    } catch (e) {
+      console.error("Failed to Delete Project", e);
+      alert("Failed to delete project. Please try again.");
+    }
+  }
+
+  const onEditProject = async (id: string) => {
+  navigate(`/edit/${id}`); // ✅ Just navigate to the edit page
+};
+
 
   return (
     <div className="flex flex-col h-[calc(100vh-56px)] bg-[#1B2432] text-white p-4 overflow-y-auto">
@@ -128,30 +169,27 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
           <hr className="my-6 border-[#2A3444]" />
         </>
       )}
-      <div className="mb-4">
-        <div className="flex items-center justify-between">
-          <p className="uppercase text-gray-400 text-xs mb-2">Projects</p>
-          {role === "admin" && (
-            <button
-              onClick={() => navigate("/create")}
-              className="flex items-center gap-2 text-sm text-gray-300 hover:text-white px-2 py-1 rounded-lg bg-transparent hover:bg-[#2A3444] transition rounded-xl"
-              title="Create Project"
-            >
-              <Plus size={16} />
-            </button>
-          )}
-        </div>
-      </div>
-    {projects.map((item) => (
-        <button
-          key={item._id}
-          onClick={() => dispatch(setActiveView(`project-${item.name}`))}
-          className="flex items-center gap-2 p-2 hover:bg-[#2A3444] rounded justify-center md:justify-start"
-        >
-          <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
-          <span className="md:inline">{item.name}</span>
-        </button>
-      ))}
+     <div className="mb-4">
+  <div className="flex items-center justify-between">
+    <p className="uppercase text-gray-400 text-xs mb-2">Projects</p>
+    {role === "admin" && (
+      <button
+        onClick={() => navigate("/create")}
+        className="flex items-center gap-2 text-sm text-gray-300 hover:text-white px-2 py-1 rounded-lg bg-transparent hover:bg-[#2A3444] transition rounded-xl"
+        title="Create Project"
+      >
+        <Plus size={16} />
+      </button>
+    )}
+  </div>
+</div>
+
+<SlideProjects
+  projects={projects}
+  onEditProject={onEditProject}
+  onDeleteProject={onDeleteProject}
+  onAddMember={(id) => console.log("Add member to", id)}
+/>
 
       
       <hr className="my-6 border-[#2A3444]" />

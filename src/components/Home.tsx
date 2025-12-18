@@ -95,7 +95,7 @@ const Home: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden fixed bottom-6 left-4 bg-gray-800 hover:bg-gray-700 p-3 rounded-full shadow-lg z-50 transition-colors"
+            className="md:hidden fixed bottom-6 left-4 bg-gray-800 hover:bg-gray-700 p-3 rounded-full shadow-lg z-30 transition-colors"
             onClick={() => setIsSidebarOpen(true)}
             aria-label="Open menu"
           >

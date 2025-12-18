@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+
 const userSlice = createSlice({
     name: "user",
     initialState: {
@@ -8,6 +9,7 @@ const userSlice = createSlice({
         password:"",
         error: "",
         showError: false,
+        showTask: false
 
 
     },
@@ -27,6 +29,13 @@ const userSlice = createSlice({
         userShowError: (state) => {
             state.showError = true
         },
+        userShowTask : (state) => {
+            if(state.showTask){
+                state.showTask = false
+            }else{
+                state.showTask = true
+            }
+        }
     },
 });
 

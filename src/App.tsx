@@ -14,6 +14,11 @@ import Portfolios from './components/Portfolios'
 import Workspace from './components/Workspace'
 import Goals from './components/Goals'
 import ProjectView from './components/ProjectView'
+import ManageTasks from './components/ManageTask'
+import MyTasks from './components/MyTask'
+import AcceptInvite from './components/AcceptInvite'
+import SetPassword from './components/SetPassword'
+
 
 function App() {
 
@@ -29,6 +34,7 @@ function App() {
              <Home/>
           </ProtectedRoute> }/>
         <Route path="/login" element={<AuthPage/>}/>
+        <Route path="/set-password" element={<SetPassword/>} />
         <Route path="/select" element={
           <ProtectedRoute>
              <CreateJoinPage/>
@@ -38,6 +44,11 @@ function App() {
             <CreateWorkspace/>
           </ProtectedRoute>
           }/>
+        <Route path="/edit/:id" element={
+          <ProtectedRoute>
+             <CreateWorkspace />
+          </ProtectedRoute>
+          } /> 
         <Route path='/join' element={
          <ProtectedRoute>
              <JoinWorkspace/>
@@ -51,6 +62,16 @@ function App() {
          <Route path="/tasks" element={
           <ProtectedRoute>
             <Tasks/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/managetask" element={
+          <ProtectedRoute>
+            <ManageTasks/>
+          </ProtectedRoute>
+         }/>
+         <Route path="/mytask" element={
+          <ProtectedRoute>
+            <MyTasks/>
           </ProtectedRoute>
          }/>
          <Route path="/inbox" element={
@@ -83,6 +104,10 @@ function App() {
             <ProjectView/>
           </ProtectedRoute>
          }/>
+         <Route path="/invite/:token" element={
+          <AcceptInvite/>
+         } />
+
       </Routes>
     </BrowserRouter>
   ) 
