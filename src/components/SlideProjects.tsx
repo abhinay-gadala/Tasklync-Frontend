@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { MoreVertical, Edit2, Trash2, UserPlus, LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { MoreVertical, Edit2, Trash2, LogOut } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { openProject } from "../redux/viewSlice";
 import Cookies from "js-cookie";
 
 interface Project {
@@ -8,114 +9,123 @@ interface Project {
   name: string;
 }
 
-interface SlideProjectsProps {
+interface Props {
   projects: Project[];
-  onEditProject?: (id: string) => void;
-  onDeleteProject?: (id: string) => void;
-  onAddMember?: (id: string) => void;
-  onLeaveProject?: (id: string) => void; // ✅ new optional callback for employees
+  onEditProject: (id: string) => void;
+  onDeleteProject: (id: string) => Promise<void>;
 }
 
-const SlideProjects: React.FC<SlideProjectsProps> = ({
-  projects,
-  onEditProject,
-  onDeleteProject,
-  onAddMember,
-  onLeaveProject,
-}) => {
-  const navigate = useNavigate();
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const role = Cookies.get("role"); // ✅ get role from cookies (admin or employee)
+const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProject }) => {
+  const dispatch = useDispatch();
 
-  const toggleMenu = (projectId: string) => {
-    setOpenMenu((prev) => (prev === projectId ? null : projectId));
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+  const role = Cookies.get("role");
+  const token = Cookies.get("jwt_Token");
+
+  /* ---------------- handlers ---------------- */
+
+  const handleLeaveProject = async (projectId: string) => {
+    if (!window.confirm("Leave this project?")) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3005/project/leave/${projectId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("You left the project");
+        window.location.reload();
+      } else {
+        alert(data.message || "Failed to leave project");
+      }
+    } catch (err) {
+      console.error("Leave project error:", err);
+      alert("Something went wrong");
+    }
   };
 
+  /* ---------------- UI ---------------- */
+
   return (
-    <div className="mt-2 space-y-2">
-      {projects.length > 0 ? (
-        projects.map((item) => (
-          <div
-            key={item._id}
-            className="relative group flex items-center justify-between p-2 hover:bg-[#2A3444] rounded-md cursor-pointer"
-          >
-            {/* Project name — click to navigate */}
-            <div
-              onClick={() => navigate(`/project/${item._id}`)}
-              className="flex items-center gap-2 flex-1"
-            >
-              <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
-              <span className="text-sm">{item.name}</span>
-            </div>
-
-            {/* 3-dots icon */}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleMenu(item._id);
-              }}
-              className="p-1 rounded hover:bg-[#353F52] transition"
-            >
-              <MoreVertical size={18} />
-            </button>
-
-            {/* Dropdown Menu — Role-based logic */}
-            {openMenu === item._id && (
-              <div className="absolute right-0 top-8 bg-[#23273A] text-sm rounded-md shadow-md py-1 w-44 z-50 border border-[#353F52]">
-                {role === "admin" ? (
-                  <>
-                    {/* Admin-only options */}
-                    <button
-                      onClick={() => {
-                        onEditProject?.(item._id);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[#2A3444] text-left"
-                    >
-                      <Edit2 size={16} /> Edit Project
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        onAddMember?.(item._id);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[#2A3444] text-left"
-                    >
-                      <UserPlus size={16} /> Add Member
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        onDeleteProject?.(item._id);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[#422b2b] text-left text-red-400"
-                    >
-                      <Trash2 size={16} /> Delete Project
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    {/* Employee-only options */}
-                    <button
-                      onClick={() => {
-                        onLeaveProject?.(item._id);
-                        setOpenMenu(null);
-                      }}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[#2A3444] text-left text-red-400"
-                    >
-                      <LogOut size={16} /> Leave Project
-                    </button>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
+    <div className="space-y-2 mt-2">
+      {projects.length === 0 && (
         <p className="text-gray-500 text-sm">No projects found</p>
       )}
+
+      {projects.map((project) => (
+        <div
+          key={project._id}
+          className="relative flex items-center justify-between px-3 py-2 rounded-md hover:bg-[#2A3444]"
+        >
+          {/* Project click */}
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => dispatch(openProject(project._id))}
+          >
+            <div className="w-3 h-3 bg-cyan-400 rounded-full" />
+            <span className="text-sm">{project.name}</span>
+          </div>
+
+          {/* 3 dots */}
+          <button
+            className="p-1 rounded hover:bg-[#353F52]"
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpenMenu(openMenu === project._id ? null : project._id);
+            }}
+          >
+            <MoreVertical size={16} />
+          </button>
+
+          {/* Dropdown */}
+          {openMenu === project._id && (
+            <div className="absolute right-2 top-10 w-40 bg-[#23273A] rounded-md shadow-lg border border-[#353F52] z-50">
+              {role === "admin" ? (
+                <>
+                  <button
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#2A3444]"
+                    onClick={() => {
+                      onEditProject(project._id);
+                      setOpenMenu(null);
+                    }}
+                  >
+                    <Edit2 size={14} /> Edit Project
+                  </button>
+
+                  <button
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#422b2b]"
+                    onClick={() => {
+                      onDeleteProject(project._id);
+                      setOpenMenu(null);
+                    }}
+                  >
+                    <Trash2 size={14} /> Delete Project
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#422b2b]"
+                  onClick={() => {
+                    handleLeaveProject(project._id);
+                    setOpenMenu(null);
+                  }}
+                >
+                  <LogOut size={14} /> Leave Project
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };

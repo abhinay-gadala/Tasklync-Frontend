@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Cookie from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import Tasks from "./Tasks";
 
 
 const Navbar: React.FC = () => {
@@ -71,11 +70,6 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Nav Links and User Profile */}
         <div className="flex items-center space-x-4">
-          <button onClick={() => {navigate("/tasks")}}
-            className="text-gray-300 hover:text-asana-blue font-medium hidden md:block"
-          >
-            My Tasks
-          </button>
           <button
             className="text-gray-300 hover:text-asana-blue font-medium hidden md:block"
             onClick={onClickSubmit}
@@ -113,11 +107,6 @@ const Navbar: React.FC = () => {
         }`}
       >
         <div className="px-4 py-2 space-y-2 border-t border-gray-700">
-          <button
-            className="block text-gray-300 hover:text-asana-blue font-medium py-2 rounded-md"
-          >
-            My Tasks
-          </button>
           <button
             className="block text-gray-300 hover:text-asana-blue font-medium py-2 rounded-md"
             onClick={onClickSubmit}

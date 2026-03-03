@@ -37,9 +37,9 @@ const SetPassword: React.FC = () => {
       <form onSubmit={submit} className="bg-[#1A1C2A] p-8 rounded-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">Set your password</h2>
         <p className="mb-4">Account: {email}</p>
-        <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="New password" className="mb-3 w-full"/>
-        <input type="password" value={confirm} onChange={(e)=>setConfirm(e.target.value)} placeholder="Confirm password" className="mb-3 w-full"/>
-        {error && <p className="text-red-400">{error}</p>}
+        <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="New password" className="m-5 w-full border-1 rounded-lg p-2 ml-2"/>
+        <input type="password" value={confirm} onChange={(e)=>setConfirm(e.target.value)} placeholder="Confirm password" className="m-3 w-full border-1 rounded-lg p-2 ml-1"/>
+        {error && <p className="text-red-400">* {error}</p>}
         <button type="submit" className="bg-purple-600 p-2 rounded w-full mt-2">Update Password</button>
       </form>
     </div>

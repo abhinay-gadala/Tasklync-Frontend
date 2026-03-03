@@ -94,12 +94,12 @@ function App() {
             <Goals/>
           </ProtectedRoute>
          }/>
-          <Route path="/workspace" element={
+          <Route path="/workspace/:workspaceId" element={
           <ProtectedRoute>
             <Workspace/>
           </ProtectedRoute>
          }/>
-         <Route path="/projectview" element={
+         <Route path="/projectview/:projectId" element={
           <ProtectedRoute>
             <ProjectView/>
           </ProtectedRoute>

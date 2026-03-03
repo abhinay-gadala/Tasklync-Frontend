@@ -43,14 +43,14 @@ const CreateWorkspace: React.FC = () => {
 
         const data = await response.json();
 
-        if (response.ok && data.data && data.data.project) {
-          const project = data.data.project;
+        if (response.ok) {
+          const projects = data.project;
 
           // ✅ Dispatch Redux actions with correct values
-          dispatch(actions.userNames(project.name));
-          dispatch(actions.userCompany(project.companyName));
-          dispatch(actions.userEmail(project.companyEmail || ""));
-          dispatch(actions.userAddress(project.companyAddress || ""));
+          dispatch(actions.userNames(projects.name));
+          dispatch(actions.userCompany(projects.companyName));
+          dispatch(actions.userEmail(projects.companyEmail || ""));
+          dispatch(actions.userAddress(projects.companyAddress || ""));
         } else {
           console.error("Invalid data structure from backend:", data);
         }

@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import Cookies from "js-cookie";
 import { Navigate } from "react-router-dom";
 

@@ -134,7 +134,7 @@ const Reports: React.FC = () => {
                     outerRadius={95}
                     paddingAngle={4}
                   >
-                    {priorityData.map((entry, i) => (
+                    {priorityData.map((_, i) => (
                       <Cell
                         key={i}
                         fill={COLORS[i]}

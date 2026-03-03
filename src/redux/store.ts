@@ -7,7 +7,7 @@ const store = configureStore({
     reducer: {
         userStore: userSlice.reducer,
         projectStore: projectSlice.reducer,
-        viewStore: viewSlice.reducer
+        viewStore: viewSlice.reducer,
     }
 })
 

@@ -1,11 +1,11 @@
 // Dashboard.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { FiLock } from "react-icons/fi";
 import { AiOutlinePlus, AiOutlineCalendar } from "react-icons/ai";
 import { MdOutlineCheckCircle } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 interface Project {
   _id: string;
@@ -178,7 +178,6 @@ const Dashboard: React.FC = () => {
 
           <div className="text-right">
             <p className="text-gray-400 text-sm">My week</p>
-            <p className="text-gray-500 text-xs mt-1">0 tasks completed • 0 collaborators</p>
           </div>
         </div>
 
@@ -209,7 +208,7 @@ const Dashboard: React.FC = () => {
         {/* Create task row */}
         <div className="mt-4 flex items-center justify-between">
           <button
-            onClick={() => navigate("/create-task")}
+            onClick={() => navigate("/managetask")}
             className="flex items-center gap-2 text-sm text-purple-300 hover:text-white"
           >
             <AiOutlinePlus /> Create task
