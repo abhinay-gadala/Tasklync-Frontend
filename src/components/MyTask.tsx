@@ -62,50 +62,50 @@ const MyTasks: React.FC = () => {
       typeof r.project === "string"
         ? r.project
         : r.project
-        ? { _id: String((r.project)._id), name: (r.project).name }
-        : null,
+          ? { _id: String((r.project)._id), name: (r.project).name }
+          : null,
     dueDate: r.dueDate || null,
     priority: r.priority || "Medium"
   });
-const fetchTasks = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch("http://localhost:3005/task", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      console.error("Failed to fetch tasks", data);
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:3005/task", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.error("Failed to fetch tasks", data);
+        setTasks([]);
+        return;
+      }
+
+      const rawTasks: TaskRaw[] = Array.isArray(data.tasks) ? data.tasks : [];
+      const normalized = rawTasks.map(normalize);
+
+      let visible: Task[];
+
+      // 👑 Admin: see ALL tasks (for their projects, as backend already scopes)
+      if (role === "admin") {
+        visible = normalized;
+      } else {
+        // 👤 Employee: only tasks assigned to them
+        visible = normalized.filter(
+          (t) => t.assignedTo && String(t.assignedTo._id) === userId
+        );
+      }
+
+      setTasks(visible);
+    } catch (err) {
+      console.error("Fetch tasks error:", err);
       setTasks([]);
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    const rawTasks: TaskRaw[] = Array.isArray(data.tasks) ? data.tasks : [];
-    const normalized = rawTasks.map(normalize);
-
-    let visible: Task[];
-
-    // 👑 Admin: see ALL tasks (for their projects, as backend already scopes)
-    if (role === "admin") {
-      visible = normalized;
-    } else {
-      // 👤 Employee: only tasks assigned to them
-      visible = normalized.filter(
-        (t) => t.assignedTo && String(t.assignedTo._id) === userId
-      );
-    }
-
-    setTasks(visible);
-  } catch (err) {
-    console.error("Fetch tasks error:", err);
-    setTasks([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
 
   useEffect(() => { fetchTasks(); }, []);
@@ -142,22 +142,22 @@ const fetchTasks = async () => {
     }
   };
 
-  if (loading) return <div className="h-screen text-white flex justify-center items-center"><ClipLoader color="#e72be4" size={60} /></div>;
+  if (loading) return <div className="h-screen bg-[#F8FAFC] flex justify-center items-center"><ClipLoader color="#9333ea" size={60} /></div>;
 
   // group tasks
   const groups: Record<StatusKey, Task[]> = { todo: [], "in-progress": [], done: [] };
   tasks.forEach(t => groups[t.status].push(t));
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] p-6 lg:p-8">
 
       {/* 🔥 Header + Admin Add Button */}
       <div className="flex justify-between mb-6">
-        <h1 className="text-3xl font-bold">My Tasks</h1>
+        <h1 className="text-3xl font-bold tracking-tight">My Tasks</h1>
 
         {role === "admin" && (
-          <button className="px-4 py-2 bg-purple-600 rounded-md hover:bg-purple-700"
-          onClick={() => {dispatch(actions.userShowTask())}}>
+          <button className="px-5 py-2.5 bg-purple-600 rounded-lg text-white font-medium hover:bg-purple-700 transition-colors shadow-sm"
+            onClick={() => { dispatch(actions.userShowTask()) }}>
             + New Task
           </button>
         )}
@@ -170,32 +170,31 @@ const fetchTasks = async () => {
             <Droppable droppableId={col} key={col}>
               {(p, s) => (
                 <div ref={p.innerRef} {...p.droppableProps}
-                  className={`p-4 rounded min-h-[350px] ${s.isDraggingOver ? "ring-2 ring-purple-500" : ""}`}
-                  style={{ background:"#1a202c" }}
+                  className={`p-4 rounded-xl min-h-[350px] border border-[#E5E7EB] ${s.isDraggingOver ? "ring-2 ring-purple-500 bg-[#E2E8F0]" : "bg-[#F1F5F9]"}`}
                 >
-                  <h2 className="text-xl mb-3">{prettyName(col)}</h2>
+                  <h2 className="text-lg font-semibold mb-4 tracking-tight text-[#0F172A]">{prettyName(col)}</h2>
 
                   {groups[col].map((task, index) => (
                     <Draggable key={task._id} draggableId={task._id} index={index}>
                       {(pr) => (
                         <div ref={pr.innerRef} {...pr.draggableProps} {...pr.dragHandleProps}
-                          className="bg-gray-800 p-3 mb-3 rounded-md shadow relative">
+                          className="bg-white p-4 mb-3 rounded-lg border border-[#E5E7EB] shadow-sm relative hover:shadow-md transition-shadow">
 
                           {/* 👑 Admin 3-dot Menu */}
-                          {role === "admin" && <DropdownMenu task={task} onDelete={fetchTasks}/>}
+                          {role === "admin" && <DropdownMenu task={task} onDelete={fetchTasks} />}
 
-                          <h3 className="font-semibold">{task.title}</h3>
-                          <p className="text-gray-400 text-sm">{task.description}</p>
+                          <h3 className="font-semibold text-[#0F172A]">{task.title}</h3>
+                          <p className="text-[#64748B] text-sm mt-1.5 leading-relaxed">{task.description}</p>
 
-                          <p className="text-xs text-purple-300 mt-1">
-                            Project: {typeof task.project==="string"?task.project:task.project?.name}
+                          <p className="text-xs font-medium text-purple-600 mt-2">
+                            Project: {typeof task.project === "string" ? task.project : task.project?.name}
                           </p>
 
-                          <p className="text-xs mt-1 text-yellow-300">
-                            Priority: <span className="font-bold">{task.priority}</span>
+                          <p className="text-xs mt-1.5 font-medium text-[#64748B]">
+                            Priority: <span className="font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">{task.priority}</span>
                           </p>
 
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-[#64748B] font-medium mt-1.5">
                             {task.dueDate && new Date(task.dueDate).toLocaleDateString()}
                           </p>
                         </div>
@@ -221,27 +220,27 @@ export default MyTasks;
 /* ============================================================ 
    3-DOT ADMIN ACTION MENU COMPONENT
    ============================================================ */
-const DropdownMenu: React.FC<{task:Task,onDelete:()=>void}> = ({task,onDelete}) => {
-  const [open,setOpen]=useState(false);
+const DropdownMenu: React.FC<{ task: Task, onDelete: () => void }> = ({ task, onDelete }) => {
+  const [open, setOpen] = useState(false);
   const token = Cookies.get("jwt_Token");
 
   const del = async () => {
-    if(!confirm("Delete task permanently?")) return;
-    await fetch(`http://localhost:3005/task/${task._id}`,{
-      method:"DELETE",
-      headers:{Authorization:`Bearer ${token}`}
+    if (!confirm("Delete task permanently?")) return;
+    await fetch(`http://localhost:3005/task/${task._id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
     });
     onDelete();
   };
 
   return (
     <div className="absolute top-2 right-2">
-      <button onClick={()=>setOpen(!open)} className="text-gray-300 text-lg">⋮</button>
+      <button onClick={() => setOpen(!open)} className="text-[#94A3B8] hover:text-[#0F172A] text-lg font-bold px-2 py-0.5 rounded transition-colors hover:bg-slate-100">⋮</button>
 
       {open && (
-        <div className="absolute right-0 bg-[#1a1c2a] p-2 rounded-md border border-gray-700 w-32 text-sm">
-          <Link to={`/managetask?edit=${task._id}`} className="block mb-2 hover:text-purple-400">✏ Edit</Link>
-          <button onClick={del} className="text-red-400 hover:text-red-300">🗑 Delete</button>
+        <div className="absolute right-0 bg-white p-2 rounded-lg border border-[#E5E7EB] shadow-lg w-32 text-sm z-10">
+          <Link to={`/managetask?edit=${task._id}`} className="block mb-2 font-medium text-[#0F172A] hover:text-purple-600 transition-colors">✏ Edit</Link>
+          <button onClick={del} className="text-red-500 font-medium hover:text-red-600 transition-colors">🗑 Delete</button>
         </div>
       )}
     </div>

@@ -143,12 +143,12 @@ const ManageTasks: React.FC = () => {
   }, [selectedProject]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6"><span onClick={() => {dispatch(actions.userShowTask())}}><LuCircleArrowLeft /></span>Manage Tasks</h1>
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] p-6 lg:p-8">
+      <h1 className="text-3xl font-bold flex items-center gap-3 mb-8 tracking-tight"><span className="cursor-pointer text-[#64748B] hover:text-[#0F172A] transition-colors" onClick={() => { dispatch(actions.userShowTask()) }}><LuCircleArrowLeft /></span>Manage Tasks</h1>
 
       {/* Select Project */}
       <select
-        className="w-full bg-[#23263A] px-4 py-2 rounded-md mb-6"
+        className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg mb-8 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
         value={selectedProject}
         onChange={(e) => setSelectedProject(e.target.value)}
       >
@@ -162,12 +162,12 @@ const ManageTasks: React.FC = () => {
       {/* Create Task Form */}
       <form
         onSubmit={handleCreateTask}
-        className="bg-[#1A1C2A] p-5 rounded-xl space-y-4 mb-8"
+        className="bg-white p-6 md:p-8 rounded-xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-5 mb-10"
       >
         <input
           type="text"
           placeholder="Task Title"
-          className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+          className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
@@ -175,7 +175,7 @@ const ManageTasks: React.FC = () => {
 
         <textarea
           placeholder="Task Description"
-          className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+          className="w-full min-h-[100px] bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
           value={formData.description}
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
@@ -186,9 +186,9 @@ const ManageTasks: React.FC = () => {
         {/* Priority + Due Date */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm mb-1">Priority</label>
+            <label className="block text-sm font-medium text-[#64748B] mb-1.5 uppercase tracking-wider">Priority</label>
             <select
-              className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+              className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
               value={formData.priority}
               onChange={(e) =>
                 setFormData({
@@ -204,10 +204,10 @@ const ManageTasks: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm mb-1">Due Date</label>
+            <label className="block text-sm font-medium text-[#64748B] mb-1.5 uppercase tracking-wider">Due Date</label>
             <input
               type="date"
-              className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+              className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
               value={formData.dueDate || ""}
               onChange={(e) =>
                 setFormData({ ...formData, dueDate: e.target.value })
@@ -220,18 +220,16 @@ const ManageTasks: React.FC = () => {
         <div className="flex gap-4">
           <button
             type="button"
-            className={`px-4 py-1 rounded ${
-              assignMode === "existing" ? "bg-purple-600" : "bg-gray-700"
-            }`}
+            className={`px-5 py-2 rounded-lg font-medium transition-colors ${assignMode === "existing" ? "bg-purple-600 text-white shadow-sm" : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+              }`}
             onClick={() => setAssignMode("existing")}
           >
             Existing User
           </button>
           <button
             type="button"
-            className={`px-4 py-1 rounded ${
-              assignMode === "new" ? "bg-purple-600" : "bg-gray-700"
-            }`}
+            className={`px-5 py-2 rounded-lg font-medium transition-colors ${assignMode === "new" ? "bg-purple-600 text-white shadow-sm" : "bg-[#F1F5F9] text-[#64748B] hover:text-[#0F172A]"
+              }`}
             onClick={() => setAssignMode("new")}
           >
             New Email
@@ -240,7 +238,7 @@ const ManageTasks: React.FC = () => {
 
         {assignMode === "existing" ? (
           <select
-            className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+            className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
             value={formData.assignedTo}
             onChange={(e) =>
               setFormData({ ...formData, assignedTo: e.target.value })
@@ -256,7 +254,7 @@ const ManageTasks: React.FC = () => {
         ) : (
           <input
             type="email"
-            className="w-full bg-[#23263A] px-4 py-2 rounded-md"
+            className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] shadow-sm px-4 py-2.5 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
             placeholder="Enter new user email"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
@@ -265,44 +263,46 @@ const ManageTasks: React.FC = () => {
 
         <button
           type="submit"
-          className="bg-gradient-to-r from-purple-500 to-fuchsia-600 w-full py-2 rounded-md font-semibold"
+          className="bg-purple-600 text-white w-full py-3 rounded-lg font-semibold shadow-sm hover:bg-purple-700 hover:shadow-md transition-all mt-4"
         >
           Create Task
         </button>
       </form>
 
       {/* Task List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {tasks.map((task) => (
-          <div key={task._id} className="bg-[#1A1C2A] p-5 rounded-lg shadow-md">
-            <div className="flex justify-between mb-2">
-              <h3 className="font-semibold">{task.title}</h3>
+          <div key={task._id} className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="font-semibold text-lg text-[#0F172A] tracking-tight">{task.title}</h3>
               <button
                 onClick={() => handleDeleteTask(task._id!)}
-                className="text-red-400"
+                className="text-red-500 font-medium hover:text-red-700 transition-colors text-sm bg-red-50 hover:bg-red-100 px-2 py-1 rounded"
               >
                 Delete
               </button>
             </div>
-            <p>{task.description}</p>
+            <p className="text-[#64748B] text-sm leading-relaxed mb-4">{task.description}</p>
 
-            <div className="mt-2 text-sm text-gray-400 flex flex-col gap-1">
+            <div className="mt-4 pt-4 border-t border-[#E5E7EB] text-sm text-[#64748B] flex flex-col gap-2 font-medium">
               <span>
-                Assigned To: {task.assignedTo || task.assignedEmail || "N/A"}
+                Assigned To: <span className="text-[#0F172A]">{task.assignedTo || task.assignedEmail || "N/A"}</span>
               </span>
               {task.priority && (
                 <span>
-                  Priority: <span className="text-purple-300">{task.priority}</span>
+                  Priority: <span className="text-purple-600">{task.priority}</span>
                 </span>
               )}
               {task.dueDate && (
                 <span>
                   Due:{" "}
-                  {new Date(task.dueDate).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
+                  <span className="text-[#0F172A]">
+                    {new Date(task.dueDate).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
                 </span>
               )}
             </div>

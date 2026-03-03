@@ -2,43 +2,43 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const CreateJoinPage: React.FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-   
+
   const handleCreate = () => {
-    navigate("/create", { replace: true})
+    navigate("/create", { replace: true })
 
 
   }
 
   const handleJoin = () => {
-    navigate("/join", { replace: true})
+    navigate("/join", { replace: true })
 
   }
 
   return (
-    <div className="h-screen w-full bg-[#0F1120] flex items-center justify-center">
-      <div className="bg-[#1A1C2A] p-14 rounded-2xl shadow-xl w-[90%] max-w-2xl text-center">
+    <div className="h-screen w-full bg-[#F8FAFC] flex items-center justify-center">
+      <div className="bg-white p-14 rounded-2xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] w-[90%] max-w-2xl text-center">
 
         {/* Title / Description */}
-        <h2 className="text-3xl font-bold text-white mb-6">
+        <h2 className="text-4xl font-bold tracking-tight text-[#0F172A] mb-4">
           Start Collaborating
         </h2>
-        <p className="text-gray-400 mb-10 text-lg">
+        <p className="text-[#64748B] font-medium mb-12 text-lg">
           Create a new workspace or join an existing one.
         </p>
 
         {/* Buttons vertically like a form */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5">
           <button
-            className="bg-gradient-to-r from-purple-500 to-fuchsia-600 text-white py-4 rounded-lg font-semibold text-lg shadow-md hover:opacity-90 transition"
+            className="bg-purple-600 text-white py-4 rounded-xl font-medium text-lg shadow-sm hover:bg-purple-700 hover:shadow-md transition-all"
             onClick={handleCreate}
           >
             Create Workspace
           </button>
 
           <button
-            className="bg-[#232536] text-white py-4 rounded-lg font-semibold text-lg shadow-md border border-[#2C2F3F] hover:bg-[#2B2D42] transition"
+            className="bg-[#F8FAFC] text-[#0F172A] py-4 rounded-xl font-medium text-lg border border-[#E5E7EB] shadow-sm hover:bg-white hover:shadow-md transition-all"
             onClick={handleJoin}
           >
             Join Workspace

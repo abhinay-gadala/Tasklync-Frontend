@@ -85,42 +85,42 @@ const Inbox: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen bg-[#07112a] text-white flex items-center justify-center">
+      <div className="h-screen bg-[#F8FAFC] text-[#0F172A] flex items-center justify-center">
         Loading inbox...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">Inbox</h1>
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] p-6 lg:p-8">
+      <h1 className="text-3xl font-bold mb-6 tracking-tight">Inbox</h1>
 
       {/* --- Assigned to you section (acts like notifications) --- */}
       <section className="mb-10">
-        <h2 className="text-xl font-semibold mb-3">Assigned to you</h2>
+        <h2 className="text-xl font-semibold mb-4 tracking-tight">Assigned to you</h2>
         {notifications.length === 0 ? (
-          <p className="text-gray-400 text-sm">No active tasks assigned to you 🎉</p>
+          <p className="text-[#64748B] text-sm">No active tasks assigned to you 🎉</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4 max-w-5xl">
             {notifications.map((task) => (
               <div
                 key={task._id}
-                className="bg-[#121218] p-4 rounded-lg shadow flex justify-between items-start"
+                className="bg-white p-5 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB] flex justify-between items-start transition-shadow hover:shadow-md"
               >
                 <div>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-xs font-medium text-[#64748B] uppercase tracking-wide">
                     {task.status === "todo"
                       ? "New task assigned"
                       : "Task updated"}
                   </p>
-                  <h3 className="font-semibold mt-1">{task.title}</h3>
+                  <h3 className="font-semibold text-lg text-[#0F172A] mt-1 tracking-tight">{task.title}</h3>
                   {task.description && (
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm text-[#64748B] mt-1.5 leading-relaxed">
                       {task.description}
                     </p>
                   )}
                   {task.project && (
-                    <p className="text-xs text-purple-300 mt-1">
+                    <p className="text-xs font-medium text-purple-600 mt-2">
                       Project:{" "}
                       {typeof task.project === "string"
                         ? task.project
@@ -128,9 +128,9 @@ const Inbox: React.FC = () => {
                     </p>
                   )}
                   {task.priority && (
-                    <p className="text-xs mt-1">
+                    <p className="text-xs mt-1.5 font-medium text-[#64748B]">
                       Priority:{" "}
-                      <span className="text-yellow-300 font-semibold">
+                      <span className="text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                         {task.priority}
                       </span>
                     </p>
@@ -142,8 +142,8 @@ const Inbox: React.FC = () => {
                     <p
                       className={
                         isOverdue(task)
-                          ? "text-red-400 font-semibold"
-                          : "text-gray-400"
+                          ? "text-red-500 font-medium"
+                          : "text-[#64748B] font-medium"
                       }
                     >
                       {isOverdue(task) ? "Overdue" : "Due"}:{" "}
@@ -151,7 +151,7 @@ const Inbox: React.FC = () => {
                     </p>
                   )}
                   {task.createdAt && (
-                    <p className="text-gray-500 mt-1">
+                    <p className="text-[#94A3B8] mt-1 font-medium">
                       {new Date(task.createdAt).toLocaleDateString()}
                     </p>
                   )}
@@ -164,38 +164,41 @@ const Inbox: React.FC = () => {
 
       {/* --- Overdue section --- */}
       <section>
-        <h2 className="text-xl font-semibold mb-3">Overdue</h2>
+        <h2 className="text-xl font-semibold mb-4 tracking-tight">Overdue</h2>
         {overdueTasks.length === 0 ? (
-          <p className="text-gray-400 text-sm">You’re all caught up ✨</p>
+          <p className="text-[#64748B] text-sm">You’re all caught up ✨</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4 max-w-5xl">
             {overdueTasks.map((task) => (
               <div
                 key={task._id}
-                className="bg-[#1a1414] border border-red-500/60 p-4 rounded-lg shadow"
+                className="bg-red-50/50 border border-red-200 p-5 rounded-xl shadow-sm transition-shadow hover:shadow-md"
               >
-                <h3 className="font-semibold text-red-300">{task.title}</h3>
+                <h3 className="font-semibold text-red-600 text-lg tracking-tight">{task.title}</h3>
                 {task.description && (
-                  <p className="text-sm text-gray-300 mt-1">
+                  <p className="text-sm text-[#64748B] mt-1.5 leading-relaxed">
                     {task.description}
                   </p>
                 )}
                 {task.project && (
-                  <p className="text-xs text-purple-300 mt-1">
+                  <p className="text-xs font-medium text-purple-600 mt-2">
                     Project:{" "}
                     {typeof task.project === "string"
                       ? task.project
                       : task.project?.name}
                   </p>
                 )}
-                <p className="text-xs text-red-400 mt-1">
+                <p className="text-xs font-medium text-red-500 mt-1.5">
                   Overdue since:{" "}
                   {task.dueDate &&
                     new Date(task.dueDate).toLocaleDateString()}
                 </p>
                 {task.priority && (
-                  <p className="text-xs text-yellow-300 mt-1">
-                    Priority: {task.priority}
+                  <p className="text-xs font-medium text-amber-600 mt-1.5">
+                    Priority:{" "}
+                    <span className="bg-amber-50 px-2 py-0.5 rounded border border-amber-200 ml-1">
+                      {task.priority}
+                    </span>
                   </p>
                 )}
               </div>

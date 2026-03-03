@@ -59,9 +59,9 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-gray-900 text-white">
+    <div className="min-h-screen w-full flex flex-col bg-[#F8FAFC] text-[#0F172A]">
       {/* Navbar */}
-      <div className="fixed top-0 left-0 right-0 h-14 bg-gray-800 border-b border-gray-700 z-50">
+      <div className="fixed top-0 left-0 right-0 h-14 bg-white border-b border-[#E5E7EB] z-50">
         <Navbar />
       </div>
 
@@ -69,9 +69,8 @@ const Home: React.FC = () => {
       <div className="flex flex-1 pt-14">
         {/* Sidebar */}
         <aside
-          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-gray-800 border-r border-gray-700 w-64 z-40 transform transition-transform duration-300 ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-          }`}
+          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-[#E5E7EB] shadow-sm w-64 z-40 transform transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            }`}
         >
           <Slide onClose={() => setIsSidebarOpen(false)} />
         </aside>
@@ -85,17 +84,17 @@ const Home: React.FC = () => {
         )}
 
         {/* Main content */}
-        <main className="flex-1 min-w-0 bg-gray-900 p-4 sm:p-6 relative">
+        <main className="flex-1 min-w-0 bg-[#F8FAFC] p-4 sm:p-6 relative">
           <div className="max-w-7xl mx-auto">{renderContent()}</div>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden fixed bottom-6 left-4 bg-gray-800 hover:bg-gray-700 p-3 rounded-full shadow-lg z-30"
+            className="md:hidden fixed bottom-6 left-4 bg-white hover:bg-gray-50 text-[#0F172A] border border-[#E5E7EB] p-3 rounded-full shadow-lg z-30"
             onClick={() => setIsSidebarOpen(true)}
             aria-label="Open sidebar"
           >
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 text-[#64748B]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

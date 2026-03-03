@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 
 interface RootStates {
   projectStore: {
-     code: string;
+    code: string;
   };
 }
 
@@ -18,9 +18,9 @@ const JoinWorkspace: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {code} = useSelector((store: RootStates) => store.projectStore )
+  const { code } = useSelector((store: RootStates) => store.projectStore)
 
-    const handlingJoinSuccess = async (): Promise<string> => {
+  const handlingJoinSuccess = async (): Promise<string> => {
     const id = localStorage.getItem("userId");
     const url = `http://localhost:3005/user/details/${id}`;
 
@@ -52,7 +52,7 @@ const JoinWorkspace: React.FC = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-           Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(formData),
         // credentials: "include", // uncomment if backend uses cookies
@@ -73,22 +73,22 @@ const JoinWorkspace: React.FC = () => {
   }
 
   return (
-    <div className="h-screen w-full bg-[#0F1120] flex items-center justify-center">
-      <div className="bg-[#1A1C2A] p-10 rounded-xl shadow-xl w-[90%] max-w-md">
-        <h2 className="text-4xl font-bold text-white text-center mb-8">
+    <div className="h-screen w-full bg-[#F8FAFC] flex items-center justify-center">
+      <div className="bg-white p-10 rounded-2xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] w-[90%] max-w-md">
+        <h2 className="text-4xl font-bold text-[#0F172A] tracking-tight text-center mb-10">
           Join Workspace
         </h2>
 
         <form className="flex flex-col gap-6"
-        onSubmit={handleJoinPage}>
+          onSubmit={handleJoinPage}>
 
           {/* Workspace Code */}
           <div className="flex flex-col gap-2">
-            <label className="text-white text-lg font-medium">Workspace Code</label>
+            <label className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Workspace Code</label>
             <input
               type="text"
               placeholder="e.g., ALPHA123"
-              className="bg-[#232536] text-white px-4 py-3 rounded-lg focus:outline-none"
+              className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={code}
               onChange={(e) => dispatch(actions.userCode(e.target.value))}
             />
@@ -97,7 +97,7 @@ const JoinWorkspace: React.FC = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="bg-gradient-to-r from-purple-500 to-fuchsia-600 text-xl text-white py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
+            className="mt-4 bg-purple-600 hover:bg-purple-700 text-xl text-white py-3.5 rounded-lg font-semibold shadow-sm transition-all"
           >
             Join Workspace
           </button>

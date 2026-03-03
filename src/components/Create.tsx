@@ -27,41 +27,41 @@ const CreateWorkspace: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // ✅ Fetch project data if in edit mode
- useEffect(() => {
-  if (id) {
-    setIsEditing(true);
+  useEffect(() => {
+    if (id) {
+      setIsEditing(true);
 
-    const fetchProjectData = async () => {
-      try {
-        const token = Cookies.get("jwt_Token");
-        const response = await fetch(`http://localhost:3005/project/details/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const fetchProjectData = async () => {
+        try {
+          const token = Cookies.get("jwt_Token");
+          const response = await fetch(`http://localhost:3005/project/details/${id}`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-        const data = await response.json();
+          const data = await response.json();
 
-        if (response.ok) {
-          const projects = data.project;
+          if (response.ok) {
+            const projects = data.project;
 
-          // ✅ Dispatch Redux actions with correct values
-          dispatch(actions.userNames(projects.name));
-          dispatch(actions.userCompany(projects.companyName));
-          dispatch(actions.userEmail(projects.companyEmail || ""));
-          dispatch(actions.userAddress(projects.companyAddress || ""));
-        } else {
-          console.error("Invalid data structure from backend:", data);
+            // ✅ Dispatch Redux actions with correct values
+            dispatch(actions.userNames(projects.name));
+            dispatch(actions.userCompany(projects.companyName));
+            dispatch(actions.userEmail(projects.companyEmail || ""));
+            dispatch(actions.userAddress(projects.companyAddress || ""));
+          } else {
+            console.error("Invalid data structure from backend:", data);
+          }
+        } catch (err) {
+          console.error("Failed to fetch project for editing", err);
         }
-      } catch (err) {
-        console.error("Failed to fetch project for editing", err);
-      }
-    };
+      };
 
-    fetchProjectData();
-  }
-}, [id, dispatch]);
+      fetchProjectData();
+    }
+  }, [id, dispatch]);
 
 
   // ✅ Handle Create / Update
@@ -106,20 +106,20 @@ const CreateWorkspace: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-[#0F1120] flex items-center justify-center">
-      <div className="bg-[#1A1C2A] p-10 rounded-xl shadow-xl w-[90%] max-w-2xl">
-        <h2 className="text-4xl font-bold text-white text-center mb-8">
+    <div className="h-screen w-full bg-[#F8FAFC] flex items-center justify-center">
+      <div className="bg-white p-10 rounded-2xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] w-[90%] max-w-2xl">
+        <h2 className="text-4xl font-bold text-[#0F172A] tracking-tight text-center mb-10">
           {isEditing ? "Edit Workspace" : "Create Workspace"}
         </h2>
 
         <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
           {/* Workspace Name */}
           <div className="flex flex-col gap-2">
-            <label className="text-white text-lg font-medium">Workspace Name</label>
+            <label className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Workspace Name</label>
             <input
               type="text"
               placeholder="e.g., Project Alpha"
-              className="bg-[#232536] text-white px-4 py-3 rounded-lg focus:outline-none"
+              className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={names}
               onChange={(e) => dispatch(actions.userNames(e.target.value))}
             />
@@ -127,11 +127,11 @@ const CreateWorkspace: React.FC = () => {
 
           {/* Company Name */}
           <div className="flex flex-col gap-2">
-            <label className="text-white text-lg font-medium">Company Name</label>
+            <label className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Company Name</label>
             <input
               type="text"
               placeholder="e.g., TechNova Pvt Ltd"
-              className="bg-[#232536] text-white px-4 py-3 rounded-lg focus:outline-none"
+              className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyName}
               onChange={(e) => dispatch(actions.userCompany(e.target.value))}
             />
@@ -139,11 +139,11 @@ const CreateWorkspace: React.FC = () => {
 
           {/* Company Email */}
           <div className="flex flex-col gap-2">
-            <label className="text-white text-lg font-medium">Company Email</label>
+            <label className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Company Email</label>
             <input
               type="email"
               placeholder="e.g., contact@technova.com"
-              className="bg-[#232536] text-white px-4 py-3 rounded-lg focus:outline-none"
+              className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyEmail}
               onChange={(e) => dispatch(actions.userEmail(e.target.value))}
             />
@@ -151,11 +151,11 @@ const CreateWorkspace: React.FC = () => {
 
           {/* Company Address */}
           <div className="flex flex-col gap-2">
-            <label className="text-white text-lg font-medium">Company Address</label>
+            <label className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Company Address</label>
             <input
               type="text"
               placeholder="e.g., Hyderabad, India"
-              className="bg-[#232536] text-white px-4 py-3 rounded-lg focus:outline-none"
+              className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyAddress}
               onChange={(e) => dispatch(actions.userAddress(e.target.value))}
             />
@@ -163,7 +163,7 @@ const CreateWorkspace: React.FC = () => {
 
           <button
             type="submit"
-            className="bg-gradient-to-r from-purple-500 to-fuchsia-600 text-xl text-white py-3 rounded-lg font-semibold shadow-md hover:opacity-90 transition"
+            className="mt-4 bg-purple-600 hover:bg-purple-700 text-xl text-white py-3.5 rounded-lg font-semibold shadow-sm transition-all"
           >
             {isEditing ? "Save Changes" : "Create Workspace"}
           </button>

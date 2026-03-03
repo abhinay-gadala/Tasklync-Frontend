@@ -56,28 +56,28 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="space-y-2 mt-2">
+    <div className="space-y-1 mt-2">
       {projects.length === 0 && (
-        <p className="text-gray-500 text-sm">No projects found</p>
+        <p className="text-[#64748B] text-sm px-3">No projects found</p>
       )}
 
       {projects.map((project) => (
         <div
           key={project._id}
-          className="relative flex items-center justify-between px-3 py-2 rounded-md hover:bg-[#2A3444]"
+          className="relative flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#F1F5F9] text-[#0F172A] transition-colors group"
         >
           {/* Project click */}
           <div
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => dispatch(openProject(project._id))}
           >
-            <div className="w-3 h-3 bg-cyan-400 rounded-full" />
-            <span className="text-sm">{project.name}</span>
+            <div className="w-2.5 h-2.5 bg-purple-500 rounded-full" />
+            <span className="text-sm font-medium">{project.name}</span>
           </div>
 
           {/* 3 dots */}
           <button
-            className="p-1 rounded hover:bg-[#353F52]"
+            className="p-1.5 rounded-md text-[#64748B] hover:text-[#0F172A] hover:bg-[#E2E8F0] opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
               setOpenMenu(openMenu === project._id ? null : project._id);
@@ -88,11 +88,11 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
 
           {/* Dropdown */}
           {openMenu === project._id && (
-            <div className="absolute right-2 top-10 w-40 bg-[#23273A] rounded-md shadow-lg border border-[#353F52] z-50">
+            <div className="absolute right-2 top-10 w-40 bg-white rounded-lg shadow-lg border border-[#E5E7EB] z-50 overflow-hidden">
               {role === "admin" ? (
                 <>
                   <button
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-[#2A3444]"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-[#0F172A] hover:bg-[#F8FAFC] transition-colors"
                     onClick={() => {
                       onEditProject(project._id);
                       setOpenMenu(null);
@@ -102,7 +102,7 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
                   </button>
 
                   <button
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#422b2b]"
+                    className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     onClick={() => {
                       onDeleteProject(project._id);
                       setOpenMenu(null);
@@ -113,7 +113,7 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
                 </>
               ) : (
                 <button
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#422b2b]"
+                  className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   onClick={() => {
                     handleLeaveProject(project._id);
                     setOpenMenu(null);

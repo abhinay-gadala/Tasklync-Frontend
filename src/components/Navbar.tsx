@@ -33,22 +33,22 @@ const Navbar: React.FC = () => {
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-gray-800 border-b border-gray-700">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#E5E7EB]">
       <div className="flex items-center justify-between h-16 px-4 md:px-6">
         {/* Logo and Mobile Menu Button */}
         <div className="flex items-center space-x-2">
           {/* Mobile menu is toggled via the profile image on small screens.
               Removed the separate hamburger button to simplify UI. */}
           <a href="/" className="flex items-center space-x-2">
-            <img src="https://res.cloudinary.com/dy21aey3k/image/upload/v1758796031/Screenshot_2025-09-25_155207_lt0qzz.png" alt="tasklync" className="w-20"/>
+            <img src="https://res.cloudinary.com/dy21aey3k/image/upload/v1758796031/Screenshot_2025-09-25_155207_lt0qzz.png" alt="tasklync" className="w-20" />
             {/* <span className="text-xl font-bold text-gray-200">Tasklync</span> */}
           </a>
         </div>
 
         {/* Centered Search Bar */}
-        <div className="flex-1 max-w-lg mx-auto hidden md:flex items-center bg-gray-700 rounded-full px-4 py-2 ring-1 ring-gray-600">
+        <div className="flex-1 max-w-lg mx-auto hidden md:flex items-center bg-[#F8FAFC] rounded-full px-4 py-2 ring-1 ring-[#E5E7EB]">
           <svg
-            className="w-5 h-5 text-gray-400"
+            className="w-5 h-5 text-[#64748B]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -64,20 +64,20 @@ const Navbar: React.FC = () => {
           <input
             type="text"
             placeholder="Search"
-            className="flex-1 bg-transparent focus:outline-none ml-2 text-gray-200"
+            className="flex-1 bg-transparent focus:outline-none ml-2 text-[#0F172A] placeholder-[#64748B]"
           />
         </div>
 
         {/* Desktop Nav Links and User Profile */}
         <div className="flex items-center space-x-4">
           <button
-            className="text-gray-300 hover:text-asana-blue font-medium hidden md:block"
+            className="text-[#64748B] hover:text-[#0F172A] font-medium hidden md:block transition-colors"
             onClick={onClickSubmit}
           >
             Logout
           </button>
           <div className="relative">
-            <div 
+            <div
               className="w-8 h-8 bg-purple-600 text-white rounded-full cursor-pointer ring-2 ring-asana-logo flex items-center justify-center font-semibold text-base uppercase"
               role="button"
               tabIndex={0}
@@ -102,21 +102,20 @@ const Navbar: React.FC = () => {
       {/* Mobile Menu */}
       <div
         id="mobile-menu"
-        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMobileMenuOpen ? 'max-h-60' : 'max-h-0'
-        }`}
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${isMobileMenuOpen ? 'max-h-60' : 'max-h-0'
+          }`}
       >
-        <div className="px-4 py-2 space-y-2 border-t border-gray-700">
+        <div className="px-4 py-2 space-y-2 border-t border-[#E5E7EB] bg-white">
           <button
-            className="block text-gray-300 hover:text-asana-blue font-medium py-2 rounded-md"
+            className="block text-[#64748B] hover:text-[#0F172A] font-medium py-2 rounded-md transition-colors"
             onClick={onClickSubmit}
           >
             Logout
           </button>
           {/* Centered Search Bar for mobile */}
-          <div className="flex items-center bg-gray-700 rounded-full px-4 py-2 ring-1 ring-gray-600">
+          <div className="flex items-center bg-[#F8FAFC] rounded-full px-4 py-2 ring-1 ring-[#E5E7EB]">
             <svg
-              className="w-5 h-5 text-gray-400"
+              className="w-5 h-5 text-[#64748B]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -132,7 +131,7 @@ const Navbar: React.FC = () => {
             <input
               type="text"
               placeholder="Search"
-              className="flex-1 bg-transparent focus:outline-none ml-2 text-gray-200"
+              className="flex-1 bg-transparent focus:outline-none ml-2 text-[#0F172A] placeholder-[#64748B]"
             />
           </div>
         </div>

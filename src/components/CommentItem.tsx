@@ -51,20 +51,20 @@ const CommentItem: React.FC<Props> = ({ comment, refresh }) => {
   };
 
   return (
-    <div className="bg-[#1A1C2A] p-4 rounded-lg">
-      <div className="flex justify-between items-center">
-        <p className="font-semibold">{comment.user.name}</p>
+    <div className="bg-[#F8FAFC] p-4 rounded-xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] mb-3">
+      <div className="flex justify-between items-center mb-1">
+        <p className="font-semibold text-[#0F172A]">{comment.user.name}</p>
 
-        <button onClick={deleteComment} className="text-red-400 text-xs">
+        <button onClick={deleteComment} className="text-red-500 hover:text-red-600 font-medium transition-colors text-xs bg-red-50 px-2 py-1 rounded hover:bg-red-100">
           Delete
         </button>
       </div>
 
-      <p className="text-sm mt-1">{comment.text}</p>
+      <p className="text-sm mt-2 text-[#64748B] leading-relaxed">{comment.text}</p>
 
       <button
         onClick={() => setShowReplies(!showReplies)}
-        className="text-xs text-purple-400 mt-2"
+        className="text-xs text-purple-600 font-medium hover:text-purple-700 mt-3 transition-colors underline-offset-2 hover:underline"
       >
         {showReplies ? "Hide replies" : "View replies"}
       </button>
@@ -74,9 +74,9 @@ const CommentItem: React.FC<Props> = ({ comment, refresh }) => {
           {comment.replies.map((r: any) => (
             <div
               key={r._id}
-              className="bg-[#232536] p-2 rounded-md text-sm"
+              className="bg-white p-3 rounded-lg border border-[#E5E7EB] text-sm shadow-sm"
             >
-              <strong>{r.user.name}:</strong> {r.text}
+              <strong className="text-[#0F172A]">{r.user.name}:</strong> <span className="text-[#64748B]">{r.text}</span>
             </div>
           ))}
 
@@ -85,9 +85,9 @@ const CommentItem: React.FC<Props> = ({ comment, refresh }) => {
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Reply..."
-              className="flex-1 bg-[#0F1120] px-3 py-1 rounded-md text-sm"
+              className="flex-1 bg-white border border-[#E5E7EB] px-3 py-2 rounded-lg text-sm text-[#0F172A] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all shadow-sm"
             />
-            <button onClick={addReply} className="text-purple-400 text-sm">
+            <button onClick={addReply} className="text-white bg-purple-600 hover:bg-purple-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm">
               Reply
             </button>
           </div>

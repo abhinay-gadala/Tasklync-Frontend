@@ -121,8 +121,8 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center" style={{ background: "#07112a" }}>
-        <ClipLoader color="#e72be4" size={60} />
+      <div className="h-screen flex justify-center items-center" style={{ background: "#F8FAFC" }}>
+        <ClipLoader color="#9333ea" size={60} />
       </div>
     );
   }
@@ -132,72 +132,72 @@ const Dashboard: React.FC = () => {
   const pendingTasks = tasks.filter((t) => t.status !== "done").length;
 
   return (
-    <div className="min-h-screen text-white p-8">
+    <div className="min-h-screen text-[#0F172A] p-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-semibold">Good afternoon, {name || "unknown"}</h1>
-        <p className="text-gray-400 mt-2">Welcome back — here's what's happening in your workspace</p>
+        <p className="text-[#64748B] mt-2 text-lg tracking-tight">Welcome back — here's what's happening in your workspace</p>
       </div>
 
       {/* Metrics row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-[#1a202c] p-6 rounded-xl shadow-inner">
-          <p className="text-gray-400 text-sm">Projects</p>
-          <p className="text-2xl font-bold mt-2">{projects.length}</p>
+        <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
+          <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Projects</p>
+          <p className="text-3xl font-bold mt-2 text-[#0F172A]">{projects.length}</p>
         </div>
-        <div className="bg-[#1a202c] p-6 rounded-xl shadow-inner">
-          <p className="text-gray-400 text-sm">Total Tasks</p>
-          <p className="text-2xl font-bold mt-2">{totalTasks}</p>
+        <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
+          <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Total Tasks</p>
+          <p className="text-3xl font-bold mt-2 text-[#0F172A]">{totalTasks}</p>
         </div>
-        <div className="bg-[#1a202c] p-6 rounded-xl shadow-inner">
-          <p className="text-gray-400 text-sm">Completed</p>
-          <p className="text-2xl font-bold mt-2 text-green-400">{completedTasks}</p>
+        <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
+          <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Completed</p>
+          <p className="text-3xl font-bold mt-2 text-emerald-600">{completedTasks}</p>
         </div>
-        <div className="bg-[#1a202c] p-6 rounded-xl shadow-inner">
-          <p className="text-gray-400 text-sm">Pending</p>
-          <p className="text-2xl font-bold mt-2 text-yellow-400">{pendingTasks}</p>
+        <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
+          <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Pending</p>
+          <p className="text-3xl font-bold mt-2 text-amber-500">{pendingTasks}</p>
         </div>
       </div>
 
       {/* My tasks (wide) */}
-      <div className="bg-[#0b0f17] rounded-xl p-6 max-w-6xl">
+      <div className="bg-white rounded-xl p-6 max-w-6xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center text-black font-semibold">
-              {name ? name.charAt(0).toLowerCase() : "un"}
+            <div className="w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-semibold shadow-sm ring-1 ring-white">
+              {name ? name.charAt(0).toUpperCase() : "U"}
             </div>
 
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold">My tasks</h2>
-                <span className="text-gray-400 flex items-center gap-1 text-sm"><FiLock /></span>
+                <h2 className="text-xl font-semibold tracking-tight text-[#0F172A]">My tasks</h2>
+                <span className="text-[#64748B] flex items-center gap-1 text-sm"><FiLock /></span>
               </div>
-              <p className="text-gray-400 text-sm mt-1">Upcoming • Overdue • Completed</p>
+              <p className="text-[#64748B] text-sm mt-1">Upcoming • Overdue • Completed</p>
             </div>
           </div>
 
           <div className="text-right">
-            <p className="text-gray-400 text-sm">My week</p>
+            <p className="text-[#64748B] text-sm font-medium">My week</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="mt-6 border-b border-gray-800">
+        <div className="mt-8 border-b border-[#E5E7EB]">
           <nav className="flex gap-6">
             <button
-              className={`pb-3 ${activeTab === "upcoming" ? "text-white border-b-2 border-purple-500" : "text-gray-400"}`}
+              className={`pb-3 text-sm font-medium transition-colors ${activeTab === "upcoming" ? "text-[#0F172A] border-b-2 border-purple-600" : "text-[#64748B] hover:text-[#0F172A]"}`}
               onClick={() => setActiveTab("upcoming")}
             >
               Upcoming
             </button>
             <button
-              className={`pb-3 ${activeTab === "overdue" ? "text-white border-b-2 border-purple-500" : "text-gray-400"}`}
+              className={`pb-3 text-sm font-medium transition-colors ${activeTab === "overdue" ? "text-[#0F172A] border-b-2 border-purple-600" : "text-[#64748B] hover:text-[#0F172A]"}`}
               onClick={() => setActiveTab("overdue")}
             >
               Overdue
             </button>
             <button
-              className={`pb-3 ${activeTab === "completed" ? "text-white border-b-2 border-purple-500" : "text-gray-400"}`}
+              className={`pb-3 text-sm font-medium transition-colors ${activeTab === "completed" ? "text-[#0F172A] border-b-2 border-purple-600" : "text-[#64748B] hover:text-[#0F172A]"}`}
               onClick={() => setActiveTab("completed")}
             >
               Completed
@@ -209,12 +209,12 @@ const Dashboard: React.FC = () => {
         <div className="mt-4 flex items-center justify-between">
           <button
             onClick={() => navigate("/managetask")}
-            className="flex items-center gap-2 text-sm text-purple-300 hover:text-white"
+            className="flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
           >
             <AiOutlinePlus /> Create task
           </button>
 
-          <div className="text-xs text-gray-500 flex items-center gap-2">
+          <div className="text-xs font-medium text-[#64748B] flex items-center gap-2">
             <AiOutlineCalendar /> <span>Today</span>
           </div>
         </div>
@@ -222,37 +222,37 @@ const Dashboard: React.FC = () => {
         {/* Task list */}
         <div className="mt-6 space-y-3">
           {filteredTasks.length === 0 ? (
-            <p className="text-gray-400">No tasks — enjoy your day 😌</p>
+            <p className="text-[#64748B] px-2">No tasks — enjoy your day 😌</p>
           ) : (
             filteredTasks.map((t) => {
               const proj = t.projectId ? projectMap.get(t.projectId) : undefined;
               return (
                 <div
                   key={t._id}
-                  className="bg-gray-900 p-4 rounded-lg flex justify-between items-center"
+                  className="bg-[#F8FAFC] p-4 rounded-xl flex justify-between items-center hover:bg-[#F1F5F9] transition-colors border border-transparent hover:border-[#E5E7EB]"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="text-green-400"><MdOutlineCheckCircle size={20} /></div>
+                    <div className="text-emerald-500"><MdOutlineCheckCircle size={20} /></div>
                     <div>
-                      <h3 className="text-base font-medium">{t.title}</h3>
-                      <p className="text-sm text-gray-400">{t.status}</p>
+                      <h3 className="text-base font-medium text-[#0F172A]">{t.title}</h3>
+                      <p className="text-sm text-[#64748B] capitalize">{t.status}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4">
                     {proj ? (
-                      <div className="text-xs px-3 py-1 rounded-full bg-[#1b2430] text-gray-200">
+                      <div className="text-xs px-3 py-1 rounded-full bg-white text-[#64748B] border border-[#E5E7EB] shadow-sm font-medium">
                         {proj.name.length > 12 ? proj.name.slice(0, 12) + "…" : proj.name}
                       </div>
                     ) : (
-                      <div className="text-xs px-3 py-1 rounded-full bg-[#1b2430] text-gray-200">No project</div>
+                      <div className="text-xs px-3 py-1 rounded-full bg-white text-[#64748B] border border-[#E5E7EB] shadow-sm font-medium">No project</div>
                     )}
 
-                    <div className="text-xs text-gray-400">{formatDateShort(t.dueDate)}</div>
+                    <div className="text-xs text-[#64748B] font-medium">{formatDateShort(t.dueDate)}</div>
 
                     <button
                       onClick={() => navigate(`/task/${t._id}`)}
-                      className="text-purple-400 hover:text-purple-300 text-sm"
+                      className="text-purple-600 hover:text-purple-700 text-sm font-medium transition-colors"
                     >
                       View
                     </button>

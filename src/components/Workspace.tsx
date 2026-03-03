@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import CommentItem from "./CommentItem";
+import { ArrowLeft } from "lucide-react";
 
 /* ---------------- SIMPLE THROTTLE ---------------- */
 function throttle<T extends (...args: any[]) => any>(
@@ -161,19 +162,30 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
   );
 
   return (
-    <div className="bg-[#0F1120] rounded-xl p-6 h-full flex flex-col">
-      <h2 className="text-xl font-bold mb-4">Workspace Chat</h2>
+    <div className="bg-white border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] rounded-xl p-6 h-full flex flex-col">
+      <div className="flex items-center mb-4">
+        {selectedProject && (
+          <button
+            onClick={() => setSelectedProject(null)}
+            className="mr-3 p-2 text-[#64748B] hover:text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors"
+            title="Back to Projects"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        )}
+        <h2 className="text-xl font-bold tracking-tight text-[#0F172A]">Workspace Chat</h2>
+      </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {!effectiveWorkspaceId ? (
           <div>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-[#64748B] text-sm mb-4">
               Select a project to join the group chat:
             </p>
 
             {projects.length === 0 ? (
-              <p className="text-gray-400 text-sm">
+              <p className="text-[#64748B] text-sm font-medium bg-slate-50 p-3 rounded border border-[#E5E7EB]">
                 No projects available.
               </p>
             ) : (
@@ -182,7 +194,7 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
                   <button
                     key={project._id}
                     onClick={() => setSelectedProject(project._id)}
-                    className="w-full text-left bg-[#1A1C2A] p-3 rounded-lg hover:bg-[#2A2C3A] transition"
+                    className="w-full text-left bg-[#F8FAFC] p-4 rounded-lg hover:bg-[#F1F5F9] border border-[#E5E7EB] text-[#0F172A] font-medium shadow-sm transition-all"
                   >
                     {project.name}
                   </button>
@@ -191,7 +203,7 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
             )}
           </div>
         ) : comments.length === 0 ? (
-          <p className="text-gray-400 text-sm">No messages yet</p>
+          <p className="text-[#64748B] text-sm text-center py-4">No messages yet</p>
         ) : (
           comments.map((comment) => (
             <CommentItem
@@ -210,12 +222,12 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-[#1A1C2A] px-4 py-2 rounded-lg outline-none"
+            className="flex-1 bg-[#F8FAFC] px-4 py-2 rounded-lg border border-[#E5E7EB] text-[#0F172A] placeholder-[#94A3B8] focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all shadow-sm"
           />
           <button
             onClick={addComment}
             disabled={loading || !text.trim()}
-            className="bg-purple-600 px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-purple-600 text-white font-medium px-5 py-2.5 rounded-lg shadow-sm hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             Send
           </button>

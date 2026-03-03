@@ -92,13 +92,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
 
   return (
     <div className="w-full max-w-sm">
-      <h1 className="text-3xl font-semibold text-white mb-6">Taskync</h1>
-      <h2 className="text-3xl font-semibold text-white mb-6">
+      <h1 className="text-3xl font-bold text-[#0F172A] mb-2 tracking-tight">Taskync</h1>
+      <h2 className="text-2xl font-semibold text-[#64748B] mb-8 tracking-tight">
         Welcome back
       </h2>
 
       {inviteEmail && (
-        <p className="text-purple-400 text-sm mb-3">
+        <p className="text-purple-600 font-medium text-sm mb-4 bg-purple-50 p-3 rounded-lg border border-purple-100">
           You were invited. Use your temporary password from email.
         </p>
       )}
@@ -107,8 +107,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
         <input
           type="email"
           placeholder="Email"
-          className="w-full px-4 py-3 bg-gray-800 rounded-lg text-white 
-                     focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 bg-white border border-[#E5E7EB] shadow-sm rounded-lg text-[#0F172A] 
+                     focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           value={email}
           onChange={(e) => {
             dispatch(actions.userEmail(e.target.value));
@@ -117,8 +117,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full px-4 py-3 bg-gray-800 rounded-lg text-white 
-                     focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 bg-white border border-[#E5E7EB] shadow-sm rounded-lg text-[#0F172A] 
+                     focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
           value={password}
           onChange={(e) => {
             dispatch(actions.userPassword(e.target.value));
@@ -129,18 +129,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
 
         <button
           type="submit"
-          className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg 
-                     text-white font-medium transition"
+          className="w-full py-3 mt-2 bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm 
+                     text-white font-medium transition-all"
         >
           Log In
         </button>
       </form>
 
-      <p className="text-sm text-gray-400 text-center mt-6">
+      <p className="text-sm text-[#64748B] text-center mt-8 font-medium">
         Don’t have an account?{" "}
         <button
           onClick={onToggle}
-          className="text-purple-400 hover:underline font-medium"
+          className="text-purple-600 hover:text-purple-700 hover:underline font-semibold transition-colors"
         >
           Sign up
         </button>

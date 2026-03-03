@@ -85,7 +85,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
 
   /* ---------------- UI ---------------- */
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)] bg-[#1B2432] text-white p-4 overflow-y-auto">
+    <div className="flex flex-col h-[calc(100vh-56px)] bg-white text-[#0F172A] p-4 overflow-y-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2
@@ -101,30 +101,30 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
 
       {/* Navigation */}
       <p className="space-y-1"></p>
-        <NavItem icon={<Home size={20} />} label="Home" onClick={() => dispatch(setActiveView("home"))} />
-        <NavItem icon={<CheckCircle size={20} />} label="My Tasks" onClick={() => dispatch(setActiveView("tasks"))} />
-        <NavItem icon={<Bell size={20} />} label="Inbox" onClick={() => dispatch(setActiveView("inbox"))} />
-      
+      <NavItem icon={<Home size={20} />} label="Home" onClick={() => dispatch(setActiveView("home"))} />
+      <NavItem icon={<CheckCircle size={20} />} label="My Tasks" onClick={() => dispatch(setActiveView("tasks"))} />
+      <NavItem icon={<Bell size={20} />} label="Inbox" onClick={() => dispatch(setActiveView("inbox"))} />
 
-      <hr className="my-6 border-[#2A3444]" />
+
+      <hr className="my-6 border-[#E5E7EB]" />
 
       {/* Admin Insights */}
       {role === "admin" && (
         <>
-          <p className="text-xs text-gray-400 mb-2 uppercase">Insights</p>
+          <p className="text-xs text-[#64748B] mb-2 uppercase font-medium tracking-wide">Insights</p>
           <NavItem icon={<BarChart size={20} />} label="Reporting" onClick={() => dispatch(setActiveView("reporting"))} />
           <NavItem icon={<Folder size={20} />} label="Portfolios" onClick={() => dispatch(setActiveView("portfolios"))} />
           <NavItem icon={<Target size={20} />} label="Goals" onClick={() => dispatch(setActiveView("goals"))} />
-          <hr className="my-6 border-[#2A3444]" />
+          <hr className="my-6 border-[#E5E7EB]" />
         </>
       )}
 
       {/* Projects */}
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-gray-400 uppercase">Projects</p>
+        <p className="text-xs text-[#64748B] uppercase font-medium tracking-wide">Projects</p>
         {role === "admin" && (
           <button onClick={() => navigate("/create")}>
-            <Plus size={16} />
+            <Plus size={16} className="text-[#64748B] hover:text-[#0F172A]" />
           </button>
         )}
       </div>
@@ -135,7 +135,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
         onDeleteProject={onDeleteProject}
       />
 
-      <hr className="my-6 border-[#2A3444]" />
+      <hr className="my-6 border-[#E5E7EB]" />
 
       {/* Team */}
       <NavItem
@@ -153,9 +153,9 @@ export default Slide;
 const NavItem = ({ icon, label, onClick }: any) => (
   <button
     onClick={onClick}
-    className="flex items-center gap-2 p-2 rounded hover:bg-[#2A3444]"
+    className="flex items-center gap-2 p-2 rounded text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] transition-colors"
   >
-    {icon}
-    <span>{label}</span>
+    {React.cloneElement(icon, { className: "text-[#64748B]" })}
+    <span className="font-medium">{label}</span>
   </button>
 );

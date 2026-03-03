@@ -33,14 +33,14 @@ const SetPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0F1120] text-white">
-      <form onSubmit={submit} className="bg-[#1A1C2A] p-8 rounded-lg w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Set your password</h2>
-        <p className="mb-4">Account: {email}</p>
-        <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="New password" className="m-5 w-full border-1 rounded-lg p-2 ml-2"/>
-        <input type="password" value={confirm} onChange={(e)=>setConfirm(e.target.value)} placeholder="Confirm password" className="m-3 w-full border-1 rounded-lg p-2 ml-1"/>
-        {error && <p className="text-red-400">* {error}</p>}
-        <button type="submit" className="bg-purple-600 p-2 rounded w-full mt-2">Update Password</button>
+    <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] text-[#0F172A] px-6">
+      <form onSubmit={submit} className="bg-white p-8 md:p-10 rounded-2xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-4 tracking-tight">Set your password</h2>
+        <p className="mb-6 text-[#64748B] font-medium">Account: <span className="text-[#0F172A]">{email}</span></p>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="New password" className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] p-3 rounded-lg mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" />
+        <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Confirm password" className="w-full bg-white border border-[#E5E7EB] text-[#0F172A] p-3 rounded-lg mb-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" />
+        {error && <p className="text-red-500 font-medium text-sm mb-4">* {error}</p>}
+        <button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white font-medium p-3 rounded-lg w-full mt-2 shadow-sm transition-all focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">Update Password</button>
       </form>
     </div>
   );
