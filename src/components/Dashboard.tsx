@@ -3,24 +3,13 @@ import React, { useEffect, useMemo, useState } from "react";
 import Cookies from "js-cookie";
 import { ClipLoader } from "react-spinners";
 import { FiLock } from "react-icons/fi";
-import { AiOutlinePlus, AiOutlineCalendar } from "react-icons/ai";
+import { AiOutlineCalendar } from "react-icons/ai";
 import { MdOutlineCheckCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
-interface Project {
-  _id: string;
-  name: string;
-  tasks?: { status: string }[];
-}
-
-interface Task {
-  _id: string;
-  title: string;
-  status: string;
-  projectId?: string;
-  dueDate?: string | null;
-  assignedTo?: string | null;
-}
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../redux/store";
+import { setProjects, setProjectLoading, setProjectError } from "../redux/projectSlice";
+import { setTasks, setTaskLoading, setTaskError } from "../redux/taskSlice";
 
 const formatDateShort = (iso?: string | null) => {
   if (!iso) return "";
@@ -33,9 +22,14 @@ const formatDateShort = (iso?: string | null) => {
 };
 
 const Dashboard: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const projects = useSelector((state: RootState) => state.projectStore.projects);
+  const tasks = useSelector((state: RootState) => state.taskStore.tasks);
+  const loadingProjects = useSelector((state: RootState) => state.projectStore.loading);
+  const loadingTasks = useSelector((state: RootState) => state.taskStore.loading);
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
+  const loading = loadingProjects || loadingTasks;
+
   const [activeTab, setActiveTab] = useState<"upcoming" | "overdue" | "completed">(
     "upcoming"
   );
@@ -48,13 +42,14 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     let mounted = true;
     const fetchAll = async () => {
-      setLoading(true);
+      dispatch(setProjectLoading(true));
+      dispatch(setTaskLoading(true));
       try {
         const [projRes, taskRes] = await Promise.all([
-          fetch("http://localhost:3005/project/get", {
+          fetch(`${import.meta.env.VITE_API_URL}/project/get`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          fetch("http://localhost:3005/task", {
+          fetch(`${import.meta.env.VITE_API_URL}/task`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -64,21 +59,32 @@ const Dashboard: React.FC = () => {
 
         if (projRes.ok) {
           const projData = await projRes.json();
-          if (mounted) setProjects(projData.projects || []);
+          if (mounted) {
+            dispatch(setProjects(projData.projects || []));
+          }
         } else {
+          dispatch(setProjectError("Failed to fetch projects"));
           console.error("Failed to fetch projects");
         }
 
         if (taskRes.ok) {
           const taskData = await taskRes.json();
-          if (mounted) setTasks(taskData.tasks || []);
+          if (mounted) {
+            dispatch(setTasks(taskData.tasks || []));
+          }
         } else {
+          dispatch(setTaskError("Failed to fetch tasks"));
           console.error("Failed to fetch tasks");
         }
-      } catch (err) {
+      } catch (err: any) {
+        dispatch(setProjectError(err.message));
+        dispatch(setTaskError(err.message));
         console.error("Fetch error:", err);
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) {
+          dispatch(setProjectLoading(false));
+          dispatch(setTaskLoading(false));
+        }
       }
     };
 
@@ -86,21 +92,35 @@ const Dashboard: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, [token]);
+  }, [token, dispatch]);
+
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery) return projects;
+    return projects.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [projects, searchQuery]);
 
   const projectMap = useMemo(() => {
-    const m = new Map<string, Project>();
+    const m = new Map<string, any>();
     projects.forEach((p) => m.set(p._id, p));
     return m;
   }, [projects]);
 
   const filteredTasks = useMemo(() => {
     const now = new Date();
-    const upcoming: Task[] = [];
-    const overdue: Task[] = [];
-    const completed: Task[] = [];
+    const upcoming: any[] = [];
+    const overdue: any[] = [];
+    const completed: any[] = [];
 
-    for (const t of tasks) {
+    // First filter tasks globally by search query
+    const baseTasks = tasks.filter(t => {
+      if (!searchQuery) return true;
+      const proj = t.projectId ? projectMap.get(t.projectId) : undefined;
+      const matchTitle = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchProject = proj ? proj.name.toLowerCase().includes(searchQuery.toLowerCase()) : false;
+      return matchTitle || matchProject;
+    });
+
+    for (const t of baseTasks) {
       if (t.status === "done") {
         completed.push(t);
       } else {
@@ -117,9 +137,9 @@ const Dashboard: React.FC = () => {
     if (activeTab === "upcoming") return upcoming;
     if (activeTab === "overdue") return overdue;
     return completed;
-  }, [tasks, activeTab]);
+  }, [tasks, activeTab, searchQuery, projectMap]);
 
-  if (loading) {
+  if (loading && projects.length === 0 && tasks.length === 0) {
     return (
       <div className="h-screen flex justify-center items-center" style={{ background: "#F8FAFC" }}>
         <ClipLoader color="#9333ea" size={60} />
@@ -143,7 +163,7 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
           <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Projects</p>
-          <p className="text-3xl font-bold mt-2 text-[#0F172A]">{projects.length}</p>
+          <p className="text-3xl font-bold mt-2 text-[#0F172A]">{filteredProjects.length}</p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-[#E5E7EB]">
           <p className="text-[#64748B] text-sm font-medium tracking-wide uppercase">Total Tasks</p>
@@ -207,12 +227,6 @@ const Dashboard: React.FC = () => {
 
         {/* Create task row */}
         <div className="mt-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate("/managetask")}
-            className="flex items-center gap-2 text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
-          >
-            <AiOutlinePlus /> Create task
-          </button>
 
           <div className="text-xs font-medium text-[#64748B] flex items-center gap-2">
             <AiOutlineCalendar /> <span>Today</span>

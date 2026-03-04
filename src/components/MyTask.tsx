@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Cookies from "js-cookie";
 import {
   DragDropContext,
@@ -7,8 +7,11 @@ import {
 } from "@hello-pangea/dnd";
 import type { DropResult } from "@hello-pangea/dnd";
 import { Link } from "react-router-dom";
-import { ClipLoader } from 'react-spinners'
-import { useDispatch } from "react-redux";
+import { ClipLoader } from 'react-spinners';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+import { setTasks as setTasksAction } from "../redux/taskSlice";
 import userSlice from "../redux/userSlice";
 
 type StatusKey = "todo" | "in-progress" | "done";
@@ -42,12 +45,24 @@ const prettyName = (k: StatusKey) =>
 const actions = userSlice.actions;
 
 const MyTasks: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const token = Cookies.get("jwt_Token");
   const role = Cookies.get("role");
   const userId = String(localStorage.getItem("userId") || "");
   const dispatch = useDispatch();
+
+  const tasks = useSelector((state: RootState) => state.taskStore.tasks);
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
+
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery) return tasks;
+    return tasks.filter(t => {
+      const matchTitle = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const p = t.project;
+      const matchProject = typeof p === "string" ? p.toLowerCase().includes(searchQuery.toLowerCase()) : p?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchTitle || matchProject;
+    });
+  }, [tasks, searchQuery]);
 
   // normalize server → front
   const normalize = (r: TaskRaw): Task => ({
@@ -67,10 +82,11 @@ const MyTasks: React.FC = () => {
     dueDate: r.dueDate || null,
     priority: r.priority || "Medium"
   });
+
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3005/task", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/task`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -79,7 +95,7 @@ const MyTasks: React.FC = () => {
       const data = await res.json();
       if (!res.ok) {
         console.error("Failed to fetch tasks", data);
-        setTasks([]);
+        dispatch(setTasksAction([]));
         return;
       }
 
@@ -98,22 +114,24 @@ const MyTasks: React.FC = () => {
         );
       }
 
-      setTasks(visible);
+      dispatch(setTasksAction(visible));
     } catch (err) {
       console.error("Fetch tasks error:", err);
-      setTasks([]);
+      dispatch(setTasksAction([]));
     } finally {
       setLoading(false);
     }
   };
 
-
-  useEffect(() => { fetchTasks(); }, []);
+  useEffect(() => {
+    if (tasks.length === 0) fetchTasks();
+    else setLoading(false);
+  }, []);
 
   // API status update
   const sendStatusUpdate = async (id: string, status: StatusKey) => {
     try {
-      const res = await fetch(`http://localhost:3005/task/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/task/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ status })
@@ -133,20 +151,23 @@ const MyTasks: React.FC = () => {
 
     // Optimistic update
     const old = tasks;
-    setTasks(prev => prev.map(t => (t._id === draggableId ? { ...t, status: to } : t)));
+    dispatch(setTasksAction(tasks.map(t => (t._id === draggableId ? { ...t, status: to } : t))));
 
     const ok = await sendStatusUpdate(draggableId, to);
     if (!ok) {
-      alert("Error updating task!");
-      setTasks(old);
+      toast.error("Error updating task!");
+      dispatch(setTasksAction(old));
     }
   };
 
   if (loading) return <div className="h-screen bg-[#F8FAFC] flex justify-center items-center"><ClipLoader color="#9333ea" size={60} /></div>;
 
   // group tasks
-  const groups: Record<StatusKey, Task[]> = { todo: [], "in-progress": [], done: [] };
-  tasks.forEach(t => groups[t.status].push(t));
+  const groups: Record<StatusKey, any[]> = { todo: [], "in-progress": [], done: [] };
+  filteredTasks.forEach(t => {
+    const s = t.status as StatusKey;
+    if (groups[s]) groups[s].push(t);
+  });
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] p-6 lg:p-8">
@@ -226,7 +247,7 @@ const DropdownMenu: React.FC<{ task: Task, onDelete: () => void }> = ({ task, on
 
   const del = async () => {
     if (!confirm("Delete task permanently?")) return;
-    await fetch(`http://localhost:3005/task/${task._id}`, {
+    await fetch(`${import.meta.env.VITE_API_URL}/task/${task._id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });

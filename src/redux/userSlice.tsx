@@ -6,7 +6,8 @@ const userSlice = createSlice({
     initialState: {
         name: "",
         email: "",
-        password:"",
+        password: "",
+        role: "",
         error: "",
         showError: false,
         showTask: false
@@ -23,16 +24,19 @@ const userSlice = createSlice({
         userPassword: (state, data) => {
             state.password = data.payload
         },
+        userRole: (state, data) => {
+            state.role = data.payload;
+        },
         userError: (state, data) => {
             state.error = data.payload
         },
         userShowError: (state) => {
             state.showError = true
         },
-        userShowTask : (state) => {
-            if(state.showTask){
+        userShowTask: (state) => {
+            if (state.showTask) {
                 state.showTask = false
-            }else{
+            } else {
                 state.showTask = true
             }
         }

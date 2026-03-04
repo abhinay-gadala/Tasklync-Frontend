@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const SetPassword: React.FC = () => {
   const [params] = useSearchParams();
@@ -18,14 +19,14 @@ const SetPassword: React.FC = () => {
     if (password !== confirm) return setError("Passwords do not match");
 
     try {
-      const res = await fetch(`http://localhost:3005/user/${userId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
       const data = await res.json();
       if (!res.ok) return setError(data.message || "Failed to set password");
-      alert("Password updated. Please login.");
+      toast.success("Password updated. Please login.");
       navigate("/login");
     } catch {
       setError("Network error");

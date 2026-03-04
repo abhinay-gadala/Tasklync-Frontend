@@ -18,7 +18,7 @@ const CommentItem: React.FC<Props> = ({ comment, refresh }) => {
     throttle(async () => {
       if (!replyText.trim()) return;
 
-      await fetch("http://localhost:3005/comment/replies", {
+      await fetch(`${import.meta.env.VITE_API_URL}/comment/replies`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,8 +38,7 @@ const CommentItem: React.FC<Props> = ({ comment, refresh }) => {
 
   /* ---------------- DELETE COMMENT ---------------- */
   const deleteComment = async () => {
-    await fetch(
-      `http://localhost:3005/comment/comments/${comment._id}`,
+    await fetch(`${import.meta.env.VITE_API_URL}/comment/comments/${comment._id}`,
       {
         method: "DELETE",
         headers: {

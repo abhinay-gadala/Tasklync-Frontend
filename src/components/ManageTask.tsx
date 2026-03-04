@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Cookies from "js-cookie";
 import { LuCircleArrowLeft } from "react-icons/lu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
+import type { RootState, AppDispatch } from "../redux/store";
+import { setProjects } from "../redux/projectSlice";
+import { setTasks } from "../redux/taskSlice";
 import userSlice from "../redux/userSlice";
+
 
 type Priority = "Low" | "Medium" | "High";
 
-interface Task {
-  _id?: string;
+interface TaskFormData {
   title: string;
   description: string;
   assignedTo?: string;
@@ -16,30 +20,27 @@ interface Task {
   dueDate?: string; // ISO date string
 }
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-}
-
-interface Project {
-  _id: string;
-  name: string;
-}
-
 const actions = userSlice.actions
 
 const ManageTasks: React.FC = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProject, setSelectedProject] = useState<string>("");
+  const dispatch = useDispatch<AppDispatch>();
+  const projects = useSelector((state: RootState) => state.projectStore.projects);
+  const tasks = useSelector((state: RootState) => state.taskStore.tasks);
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery) return tasks;
+    return tasks.filter((t) => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [tasks, searchQuery]);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const editId = searchParams.get("edit");
+
+  const [selectedProject, setSelectedProject] = useState<string>("");
   const [assignMode, setAssignMode] = useState<"existing" | "new">("existing");
   const [newEmail, setNewEmail] = useState("");
-  const dispatch = useDispatch();
+  // Users will be dynamically selected from the active project
 
-  const [formData, setFormData] = useState<Task>({
+  const [formData, setFormData] = useState<TaskFormData>({
     title: "",
     description: "",
     assignedTo: "",
@@ -50,32 +51,22 @@ const ManageTasks: React.FC = () => {
   const token = Cookies.get("jwt_Token");
 
   // Fetch tasks of selected project
-  const fetchTasks = async () => {
-    if (!selectedProject) return;
+  const fetchTasks = async (projectId: string) => {
+    if (!projectId) return;
 
-    const res = await fetch(`http://localhost:3005/task/project/${selectedProject}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/task/project/${projectId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
     const data = await res.json();
-    if (res.ok) setTasks(data.tasks || []);
-  };
-
-  // Fetch team members
-  const fetchUsers = async () => {
-    const res = await fetch("http://localhost:3005/user/read", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    const data = await res.json();
-    if (res.ok) setUsers(data.users);
+    if (res.ok) dispatch(setTasks(data.tasks || []));
   };
 
   // Fetch projects
   const fetchProjects = async () => {
-    const res = await fetch("http://localhost:3005/project/get", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/project/get`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -101,8 +92,11 @@ const ManageTasks: React.FC = () => {
       dueDate: formData.dueDate || null,
     };
 
-    const res = await fetch("http://localhost:3005/task", {
-      method: "POST",
+    const url = editId ? `${import.meta.env.VITE_API_URL}/task/${editId}` : `${import.meta.env.VITE_API_URL}/task`;
+    const method = editId ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -119,27 +113,64 @@ const ManageTasks: React.FC = () => {
         dueDate: "",
       });
       setNewEmail("");
-      fetchTasks();
+      if (editId) {
+        setSearchParams(new URLSearchParams());
+      }
+      fetchTasks(selectedProject);
     }
   };
 
+  // Populate form if Edit mode
+  useEffect(() => {
+    if (editId && tasks.length > 0) {
+      const taskToEdit = tasks.find(t => t._id === editId);
+      if (taskToEdit) {
+        setFormData({
+          title: taskToEdit.title,
+          description: taskToEdit.description || "",
+          assignedTo: typeof taskToEdit.assignedTo === 'object' && taskToEdit.assignedTo ? taskToEdit.assignedTo._id : taskToEdit.assignedTo || "",
+          priority: (taskToEdit.priority as Priority) || "Medium",
+          dueDate: taskToEdit.dueDate ? new Date(taskToEdit.dueDate).toISOString().split('T')[0] : "",
+        });
+        if (taskToEdit.assignedEmail) {
+          setAssignMode("new");
+          setNewEmail(taskToEdit.assignedEmail);
+        } else {
+          setAssignMode("existing");
+          setNewEmail("");
+        }
+
+        const projId = typeof taskToEdit.project === 'object' && taskToEdit.project ? taskToEdit.project._id : taskToEdit.project;
+        if (projId) setSelectedProject(projId);
+      }
+    } else if (!editId) {
+      setFormData({
+        title: "",
+        description: "",
+        assignedTo: "",
+        priority: "Medium",
+        dueDate: "",
+      });
+      setNewEmail("");
+    }
+  }, [editId, tasks]);
+
   // Delete Task
   const handleDeleteTask = async (id: string) => {
-    const res = await fetch(`http://localhost:3005/task/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/task/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (res.ok) fetchTasks();
+    if (res.ok) fetchTasks(selectedProject);
   };
 
   useEffect(() => {
     fetchProjects();
-    fetchUsers();
   }, []);
 
   useEffect(() => {
-    fetchTasks();
+    fetchTasks(selectedProject);
   }, [selectedProject]);
 
   return (
@@ -245,9 +276,9 @@ const ManageTasks: React.FC = () => {
             }
           >
             <option value="">Select Member</option>
-            {users.map((u) => (
+            {projects.find((p) => p._id === selectedProject)?.members?.map((u: any) => (
               <option key={u._id} value={u._id}>
-                {u.name} ({u.email})
+                {u.name} ({u.email || u.role})
               </option>
             ))}
           </select>
@@ -265,13 +296,13 @@ const ManageTasks: React.FC = () => {
           type="submit"
           className="bg-purple-600 text-white w-full py-3 rounded-lg font-semibold shadow-sm hover:bg-purple-700 hover:shadow-md transition-all mt-4"
         >
-          Create Task
+          {editId ? "Save Edit" : "Create Task"}
         </button>
       </form>
 
       {/* Task List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <div key={task._id} className="bg-white p-6 rounded-xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md">
             <div className="flex justify-between items-start mb-3">
               <h3 className="font-semibold text-lg text-[#0F172A] tracking-tight">{task.title}</h3>
@@ -286,7 +317,7 @@ const ManageTasks: React.FC = () => {
 
             <div className="mt-4 pt-4 border-t border-[#E5E7EB] text-sm text-[#64748B] flex flex-col gap-2 font-medium">
               <span>
-                Assigned To: <span className="text-[#0F172A]">{task.assignedTo || task.assignedEmail || "N/A"}</span>
+                Assigned To: <span className="text-[#0F172A]">{typeof task.assignedTo === 'object' && task.assignedTo !== null ? task.assignedTo.name : task.assignedTo || task.assignedEmail || "N/A"}</span>
               </span>
               {task.priority && (
                 <span>

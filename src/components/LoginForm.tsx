@@ -62,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onToggle }) => {
   const onSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const url = "http://localhost:3005/user/login";
+    const url = `${import.meta.env.VITE_API_URL}/user/login`;
 
     try {
       const response = await fetch(url, {

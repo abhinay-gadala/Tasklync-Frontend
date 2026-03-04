@@ -1,51 +1,70 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import Cookies from "js-cookie";
-
-interface Project {
-  _id: string;
-  name: string;
-}
-
-interface Task {
-  _id: string;
-  status: "todo" | "in-progress" | "done" | string;
-  dueDate?: string | null;
-}
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../redux/store";
+import { setProjects } from "../redux/projectSlice";
+import { setTasks } from "../redux/taskSlice";
 
 const Portfolios: React.FC = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const projects = useSelector((state: RootState) => state.projectStore.projects);
+  const tasks = useSelector((state: RootState) => state.taskStore.tasks);
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
   const token = Cookies.get("jwt_Token");
 
   useEffect(() => {
     if (!token) return;
 
-    const headers = { Authorization: `Bearer ${token}` };
+    if (projects.length === 0 && tasks.length === 0) {
+      const headers = { Authorization: `Bearer ${token}` };
 
-    Promise.all([
-      fetch("http://localhost:3005/project/get", { headers }).then((r) =>
-        r.json()
-      ),
-      fetch("http://localhost:3005/task", { headers }).then((r) => r.json()),
-    ])
-      .then(([projectRes, taskRes]) => {
-        setProjects(projectRes.projects || []);
-        setTasks(taskRes.tasks || []);
-      })
-      .catch(() => {
-        setProjects([]);
-        setTasks([]);
-      });
-  }, [token]);
+      Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/project/get`, { headers }).then((r) =>
+          r.json()
+        ),
+        fetch(`${import.meta.env.VITE_API_URL}/task`, { headers }).then((r) => r.json()),
+      ])
+        .then(([projectRes, taskRes]) => {
+          dispatch(setProjects(projectRes.projects || []));
+          dispatch(setTasks(taskRes.tasks || []));
+        })
+        .catch(() => {
+          dispatch(setProjects([]));
+          dispatch(setTasks([]));
+        });
+    }
+  }, [token, dispatch, projects.length, tasks.length]);
+
 
   /* ---------------- calculations ---------------- */
 
-  const totalProjects = projects.length;
-  const totalTasks = tasks.length;
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery) return projects;
+    return projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [projects, searchQuery]);
 
-  const completedTasks = tasks.filter((t) => t.status === "done").length;
+  const projectMap = useMemo(() => {
+    const m = new Map<string, any>();
+    projects.forEach((p) => m.set(p._id, p));
+    return m;
+  }, [projects]);
 
-  const overdueTasks = tasks.filter(
+  const filteredTasks = useMemo(() => {
+    if (!searchQuery) return tasks;
+    return tasks.filter(t => {
+      const proj = t.projectId ? projectMap.get(t.projectId) : undefined;
+      const matchTitle = t.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchProject = proj ? proj.name.toLowerCase().includes(searchQuery.toLowerCase()) : false;
+      return matchTitle || matchProject;
+    });
+  }, [tasks, searchQuery, projectMap]);
+
+  const totalProjects = filteredProjects.length;
+  const totalTasks = filteredTasks.length;
+
+  const completedTasks = filteredTasks.filter((t) => t.status === "done").length;
+
+  const overdueTasks = filteredTasks.filter(
     (t) =>
       t.dueDate &&
       new Date(t.dueDate) < new Date() &&

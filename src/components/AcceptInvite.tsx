@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const AcceptInvite: React.FC = () => {
   const { token } = useParams<{ token: string }>();
@@ -13,7 +14,7 @@ const AcceptInvite: React.FC = () => {
     if (!token) { setError("Invalid link"); setLoading(false); return; }
     (async () => {
       try {
-        const res = await fetch(`http://localhost:3005/invite/verify/${token}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/invite/verify/${token}`);
         const data = await res.json();
         if (!res.ok) setError(data.message || "Invalid invite");
         else setInviteInfo(data);
@@ -27,13 +28,13 @@ const AcceptInvite: React.FC = () => {
 
   const handleAccept = async () => {
     try {
-      const res = await fetch(`http://localhost:3005/invite/accept/${token}`, { method: "POST" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/invite/accept/${token}`, { method: "POST" });
       const data = await res.json();
-      if (!res.ok) { alert(data.message || "Failed"); return; }
+      if (!res.ok) { toast.error(data.message || "Failed"); return; }
       // Navigate to login with email prefilled (user must use temp password from email)
       navigate(`/login?email=${encodeURIComponent(data.email)}&id=${data.userId}`);
     } catch {
-      alert("Server error");
+      toast.error("Server error");
     }
   };
 

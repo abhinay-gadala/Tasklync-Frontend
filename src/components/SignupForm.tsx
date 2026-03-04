@@ -36,6 +36,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
 
   const onSubmitSuccess = (jwtToken: string, user: userData) => {
     Cookies.set("jwt_Token", jwtToken, { expires: 7 });
+    Cookies.set("role", user.role || "pending", { expires: 7 });
     localStorage.setItem("userId", user._id)
     // store display name and update redux before navigating so UI reads it immediately
     localStorage.setItem("customerName", user.name);
@@ -51,7 +52,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onToggle }) => {
 
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = "http://localhost:3005/user/signup";
+    const url = `${import.meta.env.VITE_API_URL}/user/signup`;
     const fetchData = { name, email, password };
     try {
       const option = {

@@ -3,6 +3,7 @@ import { MoreVertical, Edit2, Trash2, LogOut } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { openProject } from "../redux/viewSlice";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
 
 interface Project {
   _id: string;
@@ -29,8 +30,7 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
     if (!window.confirm("Leave this project?")) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:3005/project/leave/${projectId}`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/project/leave/${projectId}`,
         {
           method: "POST",
           headers: {
@@ -42,14 +42,14 @@ const SlideProjects: React.FC<Props> = ({ projects, onEditProject, onDeleteProje
       const data = await res.json();
 
       if (res.ok) {
-        alert("You left the project");
+        toast.success("You left the project");
         window.location.reload();
       } else {
-        alert(data.message || "Failed to leave project");
+        toast.error(data.message || "Failed to leave project");
       }
     } catch (err) {
       console.error("Leave project error:", err);
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     }
   };
 

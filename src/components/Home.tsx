@@ -4,6 +4,7 @@ import type { RootState } from "../redux/store";
 
 import Navbar from "./Navbar";
 import Slide from "./Slide";
+import SearchResults from "./SearchResults";
 
 import Dashboard from "../components/Dashboard";
 import Tasks from "../components/Tasks";
@@ -22,6 +23,7 @@ const Home: React.FC = () => {
   const { activeView, activeProjectId } = useSelector(
     (state: RootState) => state.viewStore
   );
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
 
   const renderContent = () => {
     switch (activeView) {
@@ -69,10 +71,10 @@ const Home: React.FC = () => {
       <div className="flex flex-1 pt-14">
         {/* Sidebar */}
         <aside
-          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-[#E5E7EB] shadow-sm w-64 z-40 transform transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-[#E5E7EB] shadow-sm z-40 transform transition-all duration-300 ${searchQuery ? "w-80" : "w-64"} ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
             }`}
         >
-          <Slide onClose={() => setIsSidebarOpen(false)} />
+          {searchQuery ? <SearchResults onClose={() => setIsSidebarOpen(false)} /> : <Slide onClose={() => setIsSidebarOpen(false)} />}
         </aside>
 
         {/* Mobile overlay */}

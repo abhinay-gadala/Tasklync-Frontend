@@ -24,7 +24,7 @@ const Goals: React.FC = () => {
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://localhost:3005/task", {
+    fetch(`${import.meta.env.VITE_API_URL}/task`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

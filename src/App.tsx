@@ -1,5 +1,6 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import Home from './components/Home'
 import AuthPage from './components/AuthPage'
 import CreateJoinPage from './components/popup'
@@ -23,94 +24,95 @@ import SetPassword from './components/SetPassword'
 function App() {
 
 
-  
+
 
   return (
-  
+
     <BrowserRouter>
+      <Toaster position="bottom-right" />
       <Routes>
         <Route path="/" element={
           <ProtectedRoute>
-             <Home/>
-          </ProtectedRoute> }/>
-        <Route path="/login" element={<AuthPage/>}/>
-        <Route path="/set-password" element={<SetPassword/>} />
+            <Home />
+          </ProtectedRoute>} />
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/set-password" element={<SetPassword />} />
         <Route path="/select" element={
           <ProtectedRoute>
-             <CreateJoinPage/>
-          </ProtectedRoute>}/>
+            <CreateJoinPage />
+          </ProtectedRoute>} />
         <Route path='/create' element={
           <ProtectedRoute>
-            <CreateWorkspace/>
+            <CreateWorkspace />
           </ProtectedRoute>
-          }/>
+        } />
         <Route path="/edit/:id" element={
           <ProtectedRoute>
-             <CreateWorkspace />
+            <CreateWorkspace />
           </ProtectedRoute>
-          } /> 
+        } />
         <Route path='/join' element={
-         <ProtectedRoute>
-             <JoinWorkspace/>
-         </ProtectedRoute> 
-         }/>
-         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Dashboard/>
+            <JoinWorkspace />
           </ProtectedRoute>
-         }/>
-         <Route path="/tasks" element={
+        } />
+        <Route path="/dashboard" element={
           <ProtectedRoute>
-            <Tasks/>
+            <Dashboard />
           </ProtectedRoute>
-         }/>
-         <Route path="/managetask" element={
+        } />
+        <Route path="/tasks" element={
           <ProtectedRoute>
-            <ManageTasks/>
+            <Tasks />
           </ProtectedRoute>
-         }/>
-         <Route path="/mytask" element={
+        } />
+        <Route path="/managetask" element={
           <ProtectedRoute>
-            <MyTasks/>
+            <ManageTasks />
           </ProtectedRoute>
-         }/>
-         <Route path="/inbox" element={
+        } />
+        <Route path="/mytask" element={
           <ProtectedRoute>
-            <Inbox/>
+            <MyTasks />
           </ProtectedRoute>
-         }/>
-         <Route path="/reporting" element={
+        } />
+        <Route path="/inbox" element={
           <ProtectedRoute>
-            <Reporting/>
+            <Inbox />
           </ProtectedRoute>
-         }/>
-         <Route path="/portfolios" element={
+        } />
+        <Route path="/reporting" element={
           <ProtectedRoute>
-            <Portfolios/>
+            <Reporting />
           </ProtectedRoute>
-         }/>
-         <Route path="/goals" element={
+        } />
+        <Route path="/portfolios" element={
           <ProtectedRoute>
-            <Goals/>
+            <Portfolios />
           </ProtectedRoute>
-         }/>
-          <Route path="/workspace/:workspaceId" element={
+        } />
+        <Route path="/goals" element={
           <ProtectedRoute>
-            <Workspace/>
+            <Goals />
           </ProtectedRoute>
-         }/>
-         <Route path="/projectview/:projectId" element={
+        } />
+        <Route path="/workspace/:workspaceId" element={
           <ProtectedRoute>
-            <ProjectView/>
+            <Workspace />
           </ProtectedRoute>
-         }/>
-         <Route path="/invite/:token" element={
-          <AcceptInvite/>
-         } />
+        } />
+        <Route path="/projectview/:projectId" element={
+          <ProtectedRoute>
+            <ProjectView />
+          </ProtectedRoute>
+        } />
+        <Route path="/invite/:token" element={
+          <AcceptInvite />
+        } />
 
       </Routes>
     </BrowserRouter>
-  ) 
+  )
 }
 
 export default App

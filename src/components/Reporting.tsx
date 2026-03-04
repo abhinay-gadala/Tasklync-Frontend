@@ -29,7 +29,7 @@ const Reports: React.FC = () => {
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://localhost:3005/task", {
+    fetch(`${import.meta.env.VITE_API_URL}/task`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -152,7 +152,6 @@ const Reports: React.FC = () => {
                     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
                   }}
                 />
-
               </PieChart>
             </ResponsiveContainer>
           )}

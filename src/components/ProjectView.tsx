@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
+import { Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface User {
   _id: string;
@@ -26,6 +28,7 @@ interface Project {
   members: User[];
   tasks: Task[];
   userRole: "admin" | "member";
+  adminId?: string;
 }
 
 interface Props {
@@ -39,6 +42,8 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
   const [loading, setLoading] = useState(true);
 
   const token = Cookies.get("jwt_Token");
+  const currentUserId = localStorage.getItem("userId");
+  const currentUserRole = Cookies.get("role");
 
   useEffect(() => {
     if (!projectId) return;
@@ -46,8 +51,7 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
     const fetchProject = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `http://localhost:3005/project/details/${projectId}`,
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/project/details/${projectId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -75,6 +79,37 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
     fetchProject();
   }, [projectId, token]);
 
+  const handleDeleteMember = async (targetUserId: string) => {
+    if (!window.confirm("Are you sure you want to remove this member?")) return;
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/${targetUserId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setProject((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            members: prev.members.filter((m) => m._id !== targetUserId),
+          };
+        });
+        toast.success("Member removed successfully");
+      } else {
+        toast.error(data.message || "Failed to remove member");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error removing member");
+    }
+  };
+
   if (loading) {
     return <p className="text-[#64748B] mt-8 text-center font-medium">Loading project...</p>;
   }
@@ -101,11 +136,22 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
           {project.members.map((m) => (
             <div
               key={m._id}
-              className="px-4 py-1.5 bg-[#F8FAFC] border border-[#E5E7EB] shadow-sm rounded-full text-sm font-medium"
+              className="px-4 py-1.5 bg-[#F8FAFC] border border-[#E5E7EB] shadow-sm rounded-full text-sm font-medium flex items-center gap-2"
             >
-              {m.name}
+              <span>{m.name}</span>
               {m.role === "admin" && (
-                <span className="ml-2 text-xs text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">Admin</span>
+                <span className="text-xs text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">Admin</span>
+              )}
+
+              {/* Delete Member Button */}
+              {currentUserRole === "admin" && m._id !== currentUserId && project.adminId === currentUserId && (
+                <button
+                  onClick={() => handleDeleteMember(m._id)}
+                  className="ml-2 text-slate-400 hover:text-red-500 transition-colors focus:outline-none"
+                  title="Remove member"
+                >
+                  <Trash2 size={14} />
+                </button>
               )}
             </div>
           ))}
@@ -117,7 +163,7 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-semibold text-lg tracking-tight">Tasks</h2>
 
-          {project.userRole === "admin" && (
+          {(project.userRole === "admin" || currentUserRole === "admin") && (
             <button className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors text-sm">
               + New Task
             </button>
@@ -171,10 +217,10 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
                 {/* Right - Status */}
                 <span
                   className={`text-xs font-bold tracking-wider uppercase px-3 py-1.5 rounded-full border ${task.status === "done"
-                      ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                      : task.status === "in-progress"
-                        ? "bg-amber-50 text-amber-600 border-amber-200"
-                        : "bg-slate-50 text-slate-600 border-slate-200"
+                    ? "bg-emerald-50 text-emerald-600 border-emerald-200"
+                    : task.status === "in-progress"
+                      ? "bg-amber-50 text-amber-600 border-amber-200"
+                      : "bg-slate-50 text-slate-600 border-slate-200"
                     }`}
                 >
                   {task.status.replace("-", " ")}

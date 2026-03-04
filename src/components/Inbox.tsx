@@ -25,7 +25,7 @@ const Inbox: React.FC = () => {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3005/task", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/task`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

@@ -22,7 +22,7 @@ const JoinWorkspace: React.FC = () => {
 
   const handlingJoinSuccess = async (): Promise<string> => {
     const id = localStorage.getItem("userId");
-    const url = `http://localhost:3005/user/details/${id}`;
+    const url = `${import.meta.env.VITE_API_URL}/user/details/${id}`;
 
     try {
       const response = await fetch(url, { method: "GET" });
@@ -48,7 +48,7 @@ const JoinWorkspace: React.FC = () => {
         code
       };
 
-      const response = await fetch("http://localhost:3005/project/join", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/project/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,10 +61,16 @@ const JoinWorkspace: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        const fetchedRole = await handlingJoinSuccess();
-        Cookies.set("role", fetchedRole, { expires: 7 });
+        if (data.token && data.user) {
+          Cookies.set("jwt_Token", data.token, { expires: 7 });
+          Cookies.set("role", data.user.role, { expires: 7 });
+        } else {
+          // Fallback if backend doesn't send token
+          const fetchedRole = await handlingJoinSuccess();
+          Cookies.set("role", fetchedRole, { expires: 7 });
+        }
         navigate("/", { replace: true });
-        console.log(data)
+        console.log("Joined Successfully");
       }
     } catch (e) {
       console.log("post failed", e);

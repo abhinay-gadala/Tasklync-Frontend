@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import Cookie from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchQuery } from "../redux/searchSlice";
+import type { RootState } from "../redux/store";
 
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
   const customerName = localStorage.getItem("customerName")
 
   // Compute a single-letter avatar from the user's first name (safe fallback)
@@ -20,6 +25,10 @@ const Navbar: React.FC = () => {
     Cookie.remove("jwt_Token");
     navigate("/login", { replace: true })
   }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setSearchQuery(e.target.value));
+  };
 
   // Close mobile menu on larger screens
   useEffect(() => {
@@ -63,7 +72,9 @@ const Navbar: React.FC = () => {
           </svg>
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Search projects and tasks..."
+            value={searchQuery}
+            onChange={handleSearchChange}
             className="flex-1 bg-transparent focus:outline-none ml-2 text-[#0F172A] placeholder-[#64748B]"
           />
         </div>
@@ -130,7 +141,9 @@ const Navbar: React.FC = () => {
             </svg>
             <input
               type="text"
-              placeholder="Search"
+              placeholder="Search projects and tasks..."
+              value={searchQuery}
+              onChange={handleSearchChange}
               className="flex-1 bg-transparent focus:outline-none ml-2 text-[#0F172A] placeholder-[#64748B]"
             />
           </div>

@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import projectSlice from "../redux/projectSlice";
+import { useDispatch } from "react-redux";
 import Cookies from "js-cookie";
-
-interface RootStates {
-  projectStore: {
-    names: string;
-    companyName: string;
-    companyEmail: string;
-    companyAddress: string;
-  };
-}
-
-const actions = projectSlice.actions;
 
 const CreateWorkspace: React.FC = () => {
   const { id } = useParams(); // ✅ Detect if we're editing
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { names, companyName, companyEmail, companyAddress } = useSelector(
-    (store: RootStates) => store.projectStore
-  );
+  const [names, setNames] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyEmail, setCompanyEmail] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -34,7 +23,7 @@ const CreateWorkspace: React.FC = () => {
       const fetchProjectData = async () => {
         try {
           const token = Cookies.get("jwt_Token");
-          const response = await fetch(`http://localhost:3005/project/details/${id}`, {
+          const response = await fetch(`${import.meta.env.VITE_API_URL}/project/details/${id}`, {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -47,10 +36,10 @@ const CreateWorkspace: React.FC = () => {
             const projects = data.project;
 
             // ✅ Dispatch Redux actions with correct values
-            dispatch(actions.userNames(projects.name));
-            dispatch(actions.userCompany(projects.companyName));
-            dispatch(actions.userEmail(projects.companyEmail || ""));
-            dispatch(actions.userAddress(projects.companyAddress || ""));
+            setNames(projects.name || "");
+            setCompanyName(projects.companyName || "");
+            setCompanyEmail(projects.companyEmail || "");
+            setCompanyAddress(projects.companyAddress || "");
           } else {
             console.error("Invalid data structure from backend:", data);
           }
@@ -78,10 +67,12 @@ const CreateWorkspace: React.FC = () => {
 
     try {
       const url = isEditing
-        ? `http://localhost:3005/project/${id}` // update route
-        : `http://localhost:3005/project/create`;
+        ? `${import.meta.env.VITE_API_URL}/project/${id}` // update route
+        : `${import.meta.env.VITE_API_URL}/project/create`;
 
       const method = isEditing ? "PUT" : "POST";
+
+      console.log("Submitting project payload:", payload);
 
       const response = await fetch(url, {
         method,
@@ -96,6 +87,13 @@ const CreateWorkspace: React.FC = () => {
 
       if (response.ok) {
         console.log(isEditing ? "Project updated successfully" : "Project created successfully");
+
+        if (!isEditing && data.token && data.user) {
+          // Store upgraded token with 'admin' role privileges
+          Cookies.set("jwt_Token", data.token, { expires: 7 });
+          Cookies.set("role", data.user.role, { expires: 7 });
+        }
+
         navigate("/", { replace: true });
       } else {
         console.error("Failed to submit project:", data);
@@ -121,7 +119,7 @@ const CreateWorkspace: React.FC = () => {
               placeholder="e.g., Project Alpha"
               className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={names}
-              onChange={(e) => dispatch(actions.userNames(e.target.value))}
+              onChange={(e) => setNames(e.target.value)}
             />
           </div>
 
@@ -133,7 +131,7 @@ const CreateWorkspace: React.FC = () => {
               placeholder="e.g., TechNova Pvt Ltd"
               className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyName}
-              onChange={(e) => dispatch(actions.userCompany(e.target.value))}
+              onChange={(e) => setCompanyName(e.target.value)}
             />
           </div>
 
@@ -145,7 +143,7 @@ const CreateWorkspace: React.FC = () => {
               placeholder="e.g., contact@technova.com"
               className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyEmail}
-              onChange={(e) => dispatch(actions.userEmail(e.target.value))}
+              onChange={(e) => setCompanyEmail(e.target.value)}
             />
           </div>
 
@@ -157,7 +155,7 @@ const CreateWorkspace: React.FC = () => {
               placeholder="e.g., Hyderabad, India"
               className="bg-white border border-[#E5E7EB] text-[#0F172A] px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               value={companyAddress}
-              onChange={(e) => dispatch(actions.userAddress(e.target.value))}
+              onChange={(e) => setCompanyAddress(e.target.value)}
             />
           </div>
 

@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { setActiveView } from "../redux/viewSlice";
 import { useNavigate } from "react-router-dom";
 import SlideProjects from "./SlideProjects";
+import toast from "react-hot-toast";
 
 interface Project {
   _id: string;
@@ -38,7 +39,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
 
     const fetchProjectDetails = async () => {
       try {
-        const res = await fetch("http://localhost:3005/project/get", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/project/get`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,7 +60,7 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
   /* ---------------- Actions ---------------- */
   const onDeleteProject = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3005/project/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/project/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -69,13 +70,13 @@ const Slide: React.FC<SlideProps> = ({ onClose }) => {
       const data = await res.json();
       if (res.ok) {
         setProjects((prev) => prev.filter((p) => p._id !== id));
-        alert(data.message || "Project deleted");
+        toast.success(data.message || "Project deleted");
       } else {
-        alert(data.message || "Delete failed");
+        toast.error(data.message || "Delete failed");
       }
     } catch (e) {
       console.error(e);
-      alert("Failed to delete project");
+      toast.error("Failed to delete project");
     }
   };
 

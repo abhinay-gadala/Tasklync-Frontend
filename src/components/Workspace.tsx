@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import CommentItem from "./CommentItem";
 import { ArrowLeft } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState, AppDispatch } from "../redux/store";
+import { setProjects } from "../redux/projectSlice";
 
 /* ---------------- SIMPLE THROTTLE ---------------- */
 function throttle<T extends (...args: any[]) => any>(
@@ -23,11 +26,6 @@ function throttle<T extends (...args: any[]) => any>(
   };
 }
 
-interface Project {
-  _id: string;
-  name: string;
-}
-
 interface Props {
   workspaceId?: string;
 }
@@ -38,11 +36,18 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
 
   const workspaceId = propWorkspaceId || paramWorkspaceId;
   const token = Cookies.get("jwt_Token");
+  const dispatch = useDispatch<AppDispatch>();
+
+  const projects = useSelector((state: RootState) => state.projectStore.projects);
+  const searchQuery = useSelector((state: RootState) => state.searchStore.query);
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery) return projects;
+    return projects.filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [projects, searchQuery]);
 
   const [comments, setComments] = useState<any[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
   const effectiveWorkspaceId = workspaceId || selectedProject;
@@ -50,7 +55,7 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
   /* ---------------- FETCH PROJECTS ---------------- */
   const fetchProjects = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:3005/project/get", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/project/get`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -58,20 +63,19 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
 
       const data = await res.json();
       if (res.ok && data.projects) {
-        setProjects(data.projects);
+        dispatch(setProjects(data.projects));
       }
     } catch (err) {
       console.error("Failed to fetch projects", err);
     }
-  }, [token]);
+  }, [token, dispatch]);
 
   /* ---------------- FETCH COMMENTS ---------------- */
   const fetchComments = useCallback(async () => {
     if (!effectiveWorkspaceId) return;
 
     try {
-      const res = await fetch(
-        `http://localhost:3005/comment/comments/workspace/${effectiveWorkspaceId}`,
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/comment/comments/workspace/${effectiveWorkspaceId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -100,10 +104,10 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
 
   /* ---------------- INITIAL PROJECT LOAD ---------------- */
   useEffect(() => {
-    if (!effectiveWorkspaceId && token) {
+    if (!effectiveWorkspaceId && token && projects.length === 0) {
       fetchProjects();
     }
-  }, [effectiveWorkspaceId, token, fetchProjects]);
+  }, [effectiveWorkspaceId, token, fetchProjects, projects.length]);
 
   /* ---------------- FETCH ON WORKSPACE CHANGE ---------------- */
   useEffect(() => {
@@ -133,8 +137,7 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
         setLoading(true);
 
         try {
-          const res = await fetch(
-            "http://localhost:3005/comment/comments",
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/comment/comments`,
             {
               method: "POST",
               headers: {
@@ -184,13 +187,13 @@ const Workspace: React.FC<Props> = ({ workspaceId: propWorkspaceId }) => {
               Select a project to join the group chat:
             </p>
 
-            {projects.length === 0 ? (
+            {filteredProjects.length === 0 ? (
               <p className="text-[#64748B] text-sm font-medium bg-slate-50 p-3 rounded border border-[#E5E7EB]">
-                No projects available.
+                No projects available matching your search.
               </p>
             ) : (
               <div className="space-y-2">
-                {projects.map((project) => (
+                {filteredProjects.map((project) => (
                   <button
                     key={project._id}
                     onClick={() => setSelectedProject(project._id)}
