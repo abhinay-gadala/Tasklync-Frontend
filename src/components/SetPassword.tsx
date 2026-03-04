@@ -19,10 +19,10 @@ const SetPassword: React.FC = () => {
     if (password !== confirm) return setError("Passwords do not match");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/${userId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/set-password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ userId, password }),
       });
       const data = await res.json();
       if (!res.ok) return setError(data.message || "Failed to set password");

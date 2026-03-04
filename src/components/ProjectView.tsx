@@ -163,11 +163,11 @@ const ProjectView: React.FC<Props> = ({ projectId: propProjectId }) => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-semibold text-lg tracking-tight">Tasks</h2>
 
-          {(project.userRole === "admin" || currentUserRole === "admin") && (
+          {/* {(project.userRole === "admin" || currentUserRole === "admin") && (
             <button className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition-colors text-sm">
               + New Task
             </button>
-          )}
+          )} */}
         </div>
 
         {project.tasks.length === 0 ? (

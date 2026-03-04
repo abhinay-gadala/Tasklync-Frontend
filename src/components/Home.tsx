@@ -71,10 +71,10 @@ const Home: React.FC = () => {
       <div className="flex flex-1 pt-14">
         {/* Sidebar */}
         <aside
-          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-[#E5E7EB] shadow-sm z-40 transform transition-all duration-300 ${searchQuery ? "w-80" : "w-64"} ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          className={`fixed md:sticky top-14 h-[calc(100vh-3.5rem)] bg-white border-r border-[#E5E7EB] shadow-sm z-40 transform transition-all duration-300 w-64 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
             }`}
         >
-          {searchQuery ? <SearchResults onClose={() => setIsSidebarOpen(false)} /> : <Slide onClose={() => setIsSidebarOpen(false)} />}
+          <Slide onClose={() => setIsSidebarOpen(false)} />
         </aside>
 
         {/* Mobile overlay */}
@@ -87,7 +87,13 @@ const Home: React.FC = () => {
 
         {/* Main content */}
         <main className="flex-1 min-w-0 bg-[#F8FAFC] p-4 sm:p-6 relative">
-          <div className="max-w-7xl mx-auto">{renderContent()}</div>
+          <div className="max-w-7xl mx-auto">
+            {searchQuery ? (
+              <SearchResults onClose={() => { }} />
+            ) : (
+              renderContent()
+            )}
+          </div>
 
           {/* Mobile menu button */}
           <button

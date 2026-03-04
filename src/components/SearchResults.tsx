@@ -28,17 +28,17 @@ const SearchResults: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     if (!searchQuery) return null;
 
     return (
-        <div className="flex flex-col h-full bg-white text-[#0F172A] p-4 border-r border-[#E5E7EB] overflow-y-auto">
+        <div className="bg-white text-[#0F172A] p-6 rounded-xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] max-w-6xl w-full">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold tracking-tight">Search Results</h2>
+                <h2 className="text-2xl font-semibold tracking-tight">Search Results</h2>
                 <button
                     onClick={() => {
                         dispatch(setSearchQuery(""));
-                        onClose();
+                        if (onClose) onClose();
                     }}
-                    className="p-1 hover:bg-slate-100 rounded text-[#64748B] transition-colors"
+                    className="p-2 hover:bg-slate-100 rounded-full text-[#64748B] transition-colors"
                 >
-                    <X size={20} />
+                    <X size={24} />
                 </button>
             </div>
 

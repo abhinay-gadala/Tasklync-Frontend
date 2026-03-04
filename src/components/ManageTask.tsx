@@ -85,11 +85,11 @@ const ManageTasks: React.FC = () => {
       title: formData.title,
       description: formData.description,
       project: selectedProject,
-      assignedTo: assignMode === "existing" ? formData.assignedTo : null,
-      assignedEmail: assignMode === "new" ? newEmail : null,
+      assignedTo: assignMode === "existing" ? formData.assignedTo : "",
+      assignedEmail: assignMode === "new" ? newEmail : "",
       priority: formData.priority,
       // HTML date input gives "YYYY-MM-DD" – backend can new Date(dueDate)
-      dueDate: formData.dueDate || null,
+      dueDate: formData.dueDate || "",
     };
 
     const url = editId ? `${import.meta.env.VITE_API_URL}/task/${editId}` : `${import.meta.env.VITE_API_URL}/task`;
